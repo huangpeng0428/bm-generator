@@ -1,4 +1,13 @@
+/*
+ * @Date: 2020-03-30 17:48:15
+ * @LastEditors: PoloHuang
+ * @LastEditTime: 2020-03-31 16:17:23
+ */
 const helper = {
+  isPureObject(val) {
+    return Object.prototype.toString.call(val) === '[object Object]'
+  },
+
   assign(target, ...args) {
     args.forEach(arg => {
       Object.keys(arg).forEach(prop => {
