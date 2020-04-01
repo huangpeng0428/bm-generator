@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-03-30 17:09:40
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-03-31 17:38:20
+ * @LastEditTime: 2020-04-01 10:17:52
  */
 import Config from '../../lib/config';
 import Helper from '../../lib/helper';
@@ -137,8 +137,7 @@ export default {
         // baseURL: 'http://admanage.meizu.com',
         method: 'post',
         data: params
-      })
-        .then(res => {
+      }).then(res => {
           this.loading = false;
           if (res.code === 200) {
             this.$message({
@@ -173,6 +172,46 @@ export default {
             message: '请求保存页面配置接口失败'
           });
         });
+    },
+
+  /**
+   * @description: init loadData
+   * @param {type}
+   * @return:
+   * @author: PoloHuang
+   */
+
+    loadData(pageCode, isCopy = false) {
+      if (!isCopy) {
+        this.pageCode = pageCode
+        this.disabledPageCode = true
+      }
+
+      const setPageConfig = (pageConfig) => {
+        console.log(pageConfig);
+        Object.keys(pageConfig).forEach(prop => {
+          this.$set(this.$data, prop, pageConfig[prop]);
+        })
+      }
+
+      const loadLocalConfig = () => {
+        this.loading = true
+        this.$http({
+          url: '/meta/info',
+          params: {
+            code: pageCode
+          }
+        }).then(res => {
+          this.loading = false
+          const pageConfig = res.value
+          if (pageConfig) {
+            setPageConfig(JSON.parse(pageConfig));
+          }
+        })
+      }
+
+      loadLocalConfig()
+
     }
   },
 
