@@ -8,12 +8,13 @@ import Helper from '../../lib/helper';
 import CodeEditor from '../../components/CodeEditor'
 import router from '../../router'
 
-// 页面导航配置
+// 页面导航配置弹窗
 const defaultNavDialog = {
   visible: false,
   save() {}
 }
 
+// 页面导航实体
 const defaultNavEntity = {
   type: 'router',
   name: '',
@@ -24,7 +25,7 @@ const defaultNavEntity = {
   active: false
 }
 
-// 默认配置请求实体的弹出框配置
+// 请求接口的弹出框配置
 const defaultUrlDialog = {
   visible: false,
   supportParams: true,
@@ -39,7 +40,7 @@ const defaultUrlDialog = {
   save() {}
 }
 
-// 默认请求实体
+// 请求接口实体
 const defaultUrlEntity = {
   url: '', // 请求路径
   method: 'GET', // 请求的method
@@ -51,6 +52,30 @@ const defaultUrlEntity = {
   errorMessage: '', // 请求错误的提示文案
   isSecondSure: '2', // 是否需要二次确认弹框
   secondSureText: '是否确定保存' // 二次确认文案
+}
+
+// 表单配置弹框
+const defaultFieldDialog = {
+  visible: false,
+  save() {}
+}
+
+// 表单配置实体
+const defaultFieldEntity = {
+  title: '',
+  type: 'text',
+  key: '',
+  value: '',
+  defaultValue: '',
+  placeholder: '',
+  dataType: 'string',
+  rules: [],
+  isAsync: false,
+  options: {
+    blur: ''
+  },
+  showFilter: '',
+  componentName: ''
 }
 
 export default {
@@ -87,6 +112,9 @@ export default {
 
       requestMethods: ['GET', 'POST', 'DELETE', 'HEAD', 'PUT', 'PATCH'],
 
+      // 所有表单控件类型
+      fieldTypes: Helper.convertMapToArray(Config.fieldTypes),
+
       // 页面配置项目按的验证配置
       pageRules: {
         title: [{ required: true, message: '请输入页面标题', trigger: 'blur' }],
@@ -100,17 +128,26 @@ export default {
         ]
       },
 
-      // 页面配置选项
+      /*
+      页面配置选项
+      **/
       page: Helper.assign({}, Config.setup.page),
 
       navDialog: Helper.assign({}, defaultNavDialog),
       navEntity: Helper.assign({}, defaultNavEntity),
 
-      // 搜索表单配置选项
+      /*
+      搜索表单配置选项
+      **/
       searchForm: Helper.assign({}, Config.setup.searchForm),
 
+      // 请求接口
       urlDialog: Helper.assign({}, defaultUrlDialog),
-      urlEntity: Helper.assign({}, defaultUrlEntity)
+      urlEntity: Helper.assign({}, defaultUrlEntity),
+
+      // 表单配置
+      fieldEntity: Helper.assign({}, defaultFieldEntity),
+      fieldDialog: Helper.assign({}, defaultFieldDialog)
 
     };
   },
@@ -146,6 +183,7 @@ export default {
 
       return result
     }
+
   },
   methods: {
     renderNavOperationColumn(h) {
@@ -211,6 +249,7 @@ export default {
      * @author: PoloHuang
      */
 
+     // 配置 || 编辑请求接口
     handleSearchFormUrlConfig(row, type = 'searchForm') {
       console.log(row)
       this.urlDialog.beforeFilterMessage = `
@@ -285,6 +324,7 @@ export default {
       this.handleUrlDialogClose()
     },
 
+    // 清空请求接口
     handleClearUrlConfig(origin, urlInfo) {
       if (origin === 'searchForm') {
         this.$confirm('是否清空该url配置', '提示', {
@@ -297,7 +337,25 @@ export default {
       }
     },
 
+    /**
+     * @description: searchForm配置 && 表单配置操作弹窗方法 navDialog.visible
+     * @param {type}
+     * @return:
+     * @author: PoloHuang
+     */
+    // 新增表单
     handleSearchFormFieldAdd() {
+      this.handleFieldDialogOpen(null, (fieldInfo) => {
+        this.searchForm.fields.push(fieldInfo)
+      })
+    },
+
+    handleFieldDialogOpen(fieldEntity, save) {
+
+    },
+
+    // 处理表单配置框的关闭动作
+    handleFieldDialogClose() {
 
     },
 
@@ -413,6 +471,7 @@ export default {
   },
 
   mounted() {
+    console.log(this.fieldTypes)
     if (this.$route.params.code) {
       this.loadData(this.$route.params.code);
     } else if (this.$route.query.from) {

@@ -25,6 +25,14 @@ const helper = {
       });
     });
     return target;
+  },
+
+  convertMapToArray(source, labelName = 'label', valueName = 'value') {
+    return Object.keys(source)
+                  .map(prop => ({
+                    [labelName]: source[prop],
+                    [valueName]: prop
+                  }))
   }
 };
 export default helper
