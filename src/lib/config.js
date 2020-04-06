@@ -39,6 +39,21 @@ import expose from './expose';
     'other-component': '外部组件'
   },
 
+  ruleTypes: {
+    string: '文本',
+    number: '数字',
+    integer: '整数',
+    float: '浮点数',
+    date: '日期'
+  },
+
+  dataTypes: {
+    string: '文本',
+    number: '数字',
+    boolean: '布尔值',
+    array: '数组'
+  },
+
    setup: {
      page: {
        title: '',

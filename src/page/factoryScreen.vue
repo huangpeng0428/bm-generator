@@ -980,6 +980,70 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      :visible.sync="ruleDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="验证配置"
+      class="dialog-rule"
+      @close="handleRuleDialogClose">
+      <el-form label-width="120px">
+        <el-form-item label="验证类型">
+          <el-select v-model="ruleEntity.type">
+            <el-option
+              v-for="item in ruleTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否必填">
+          <el-switch
+            v-model="ruleEntity.required"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item
+          v-if="ruleEntity.type == 'string'"
+          label="长度限制">
+          <el-input
+            v-model.number="ruleEntity.len"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="ruleEntity.type == 'string'"
+          label="最大长度">
+          <el-input
+            v-model.number="ruleEntity.max"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="ruleEntity.type == 'string'"
+          label="最小长度">
+          <el-input
+            v-model.number="ruleEntity.min"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="提示信息">
+          <el-input
+            v-model="ruleEntity.message"
+            type="text"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="defualt"
+          @click="handleRuleDialogClose">
+          关闭
+        </el-button>
+        <el-button
+          type="primary"
+          @click="handleRuleDialogSave">
+          保存
+        </el-button>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 <script>

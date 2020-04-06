@@ -78,6 +78,62 @@ const defaultFieldEntity = {
   componentName: ''
 }
 
+// 表单配置中验证配置弹框
+const defaultRuleDialog = {
+  visible: false,
+  save() {}
+}
+
+// 表单配置中验证配置实体
+const defaultRuleEntity = {
+  type: 'string',
+  required: true,
+  len: '',
+  max: '',
+  min: '',
+  message: ''
+}
+
+// 默认对话框实体
+const defaultDialogEntity = {
+  name: '',
+  show: false,
+  loading: false,
+  type: 'default',
+  status: 'add',
+  size: 'tiny',
+  labelWidth: '120px',
+  title: '',
+  titles: {
+    add: '',
+    edit: '',
+    view: ''
+  },
+  fields: [],
+  urls: {
+    save: {
+    },
+    add: {
+    },
+    edit: {
+    }
+  },
+  template: '',
+  props: [],
+  buttons: [],
+  css: '',
+  extend: {},
+  options: {
+    add: {
+      disabled: []
+    },
+    edit: {
+      disabled: []
+    },
+    view: {}
+  }
+}
+
 export default {
   name: 'FactoryScreen',
 
@@ -112,8 +168,17 @@ export default {
 
       requestMethods: ['GET', 'POST', 'DELETE', 'HEAD', 'PUT', 'PATCH'],
 
+      fieldOnlySupportAsync: ['cascader', 'search-input', 'autocomplete'],
+
+      fieldUnsupportDefaultValue: ['custom'],
+
+      fieldSupportAsync: ['dropdown', 'cascader', 'search-input', 'autocomplete', 'checkbox-group', 'radio-group'],
+
       // 所有表单控件类型
       fieldTypes: Helper.convertMapToArray(Config.fieldTypes),
+
+      // 表单数据类型
+      dataTypes: Helper.convertMapToArray(Config.dataTypes),
 
       // 页面配置项目按的验证配置
       pageRules: {
@@ -147,7 +212,15 @@ export default {
 
       // 表单配置
       fieldEntity: Helper.assign({}, defaultFieldEntity),
-      fieldDialog: Helper.assign({}, defaultFieldDialog)
+      fieldDialog: Helper.assign({}, defaultFieldDialog),
+
+      // 表单配置中的验证配置
+      ruleEntity: Helper.assign({}, defaultRuleEntity),
+      ruleDialog: Helper.assign({}, defaultRuleDialog),
+
+      ruleTypes: Helper.convertMapToArray(Config.ruleTypes),
+
+      dialogEntity: Helper.assign({}, defaultDialogEntity)
 
     };
   },
@@ -358,6 +431,60 @@ export default {
     handleFieldDialogClose() {
 
     },
+
+    // 处理表单配置框的保存动作
+    handleFieldDialogSave() {
+
+    },
+
+    // 验证配置操作
+    renderFieldRulesOperationColumn(h) {
+      return (
+        <div>
+          <span>操作</span>
+          <el-button
+            style="margin-left: 12px;"
+            type="success"
+            size="small"
+            icon="el-icon-plus"
+            onClick={this.handleFieldRuleAdd}>
+          </el-button>
+        </div>
+      )
+    },
+
+    // 验证配置新增
+    handleFieldRuleAdd() {
+      this.handleRuleDialogOpen(null, (ruleInfo) => {
+        this.fieldEntity.rules.push(ruleInfo)
+      })
+    },
+
+    // 验证配置窗口打开
+    handleRuleDialogOpen(ruleEntity, save) {
+      if (ruleEntity !== null) {
+        this.ruleEntity = Helper.assign({}, defaultRuleEntity, ruleEntity)
+      }
+      this.ruleDialog.save = save
+      this.ruleDialog.visible = true
+    },
+
+    // 验证配置窗口关闭
+    handleRuleDialogClose() {
+
+    },
+
+    // 验证配置窗口保存
+    handleRuleDialogSave() {
+
+    },
+
+    /**
+     * @description: searchForm配置 && 按钮配置操作弹窗方法 navDialog.visible
+     * @param {type}
+     * @return:
+     * @author: PoloHuang
+     */
 
     handleSearchFormButtonAdd() {
 
