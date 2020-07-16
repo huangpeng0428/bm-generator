@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-03-30 17:09:40
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-04-01 10:17:52
+ * @LastEditTime: 2020-07-16 19:03:36
  */
 import Config from '../../lib/config';
 import Helper from '../../lib/helper';
@@ -348,6 +348,11 @@ export default {
       this.urlDialog.supportUrlFilter = true
 
       const urlEntity = Helper.assign({}, defaultUrlEntity, row.raw)
+
+      console.log(defaultUrlEntity);
+
+      console.log(row.raw);
+
       console.log(urlEntity)
 
       if (typeof urlEntity.params == 'object') {
@@ -419,22 +424,64 @@ export default {
     // 新增表单
     handleSearchFormFieldAdd() {
       this.handleFieldDialogOpen(null, (fieldInfo) => {
+        console.log(this.searchForm.fields)
         this.searchForm.fields.push(fieldInfo)
       })
     },
 
     handleFieldDialogOpen(fieldEntity, save) {
-
+      if (fieldEntity !== null) {
+        this.watchPropertyComplete(
+          this.fieldEntity,
+          [
+            { name: 'type', value: fieldEntity.type },
+            { name: 'isAsync', value: fieldEntity.isAsync }
+          ],
+          () => {
+            this.fieldEntity = Helper.assign(
+              {},
+              defaultFieldEntity,
+              fieldEntity
+            );
+            this.$set(
+              this.fieldEntity,
+              'options',
+              Helper.assign(
+                {},
+                this.getFieldEntityDefaultOptions(
+                  fieldEntity.type,
+                  fieldEntity.isAsync
+                ),
+                this.fieldEntity.options || {},
+                fieldEntity.type == 'table-column-hidden'
+                  ? {
+                      data: Helper.assign(
+                        {},
+                        this.fieldTableColumnHiddenGroupData
+                      )
+                    }
+                  : {}
+              )
+            );
+          }
+        );
+      }
+      this.fieldDialog.visible = true
+      this.fieldDialog.save = save
     },
 
     // 处理表单配置框的关闭动作
     handleFieldDialogClose() {
-
+      this.fieldEntity = Helper.assign({}, defaultFieldEntity, { rules: [] });
+      this.fieldDialog = Helper.assign({}, defaultFieldDialog);
+      this.fieldDialog.visible = false;
     },
 
     // 处理表单配置框的保存动作
     handleFieldDialogSave() {
-
+      const fieldEntity = Helper.assign({}, this.fieldEntity);
+      this.fieldDialog.save(fieldEntity);
+      this.handleFieldDialogClose();
     },
 
     // 验证配置操作
@@ -553,6 +600,20 @@ export default {
             message: '请求保存页面配置接口失败'
           });
         });
+    },
+
+    // 辅助方法，用于处理对象的属性被watch后，会被多处地方重新赋值，而导致的和预期不符合问题
+    /* eslint-disable no-param-reassign */
+    watchPropertyComplete(target, props, cb) {
+      if (props.length) {
+        const prop = props.shift()
+        this.$set(target, prop.name, prop.value)
+        this.$nextTick(() => {
+          this.watchPropertyComplete(target, props, cb)
+        })
+      } else {
+        cb()
+      }
     },
 
   /**
