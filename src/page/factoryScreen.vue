@@ -60,7 +60,6 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-
       <el-tab-pane
         label="搜索表单"
         name="searchForm">
@@ -228,6 +227,508 @@
           </el-table-column>
         </el-table>
       </el-tab-pane>
+
+      <el-tab-pane
+        label="数据列表"
+        name="dataTable">
+        <h3>基础配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="列表标题">
+            <el-input
+              v-model="dataTable.title"
+              type="text"/>
+          </el-form-item>
+        </el-form>
+
+        <hr>
+        <h3>分页配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="是否显示分页">
+            <el-switch
+              v-model="dataTable.pagination.show"
+              active-text="是"
+              inactive-text="否"/>
+          </el-form-item>
+          <template v-if="dataTable.pagination.show">
+            <el-form-item label="每页数量配置">
+              <el-checkbox-group v-model="dataTable.pagination.sizes">
+                <el-checkbox
+                  v-for="item in paginationSizes"
+                  :key="item"
+                  :label="item"/>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="默认每页数量">
+              <el-select v-model="dataTable.pagination.pageSize">
+                <el-option
+                  v-for="item in dataTable.pagination.sizes"
+                  :key="item"
+                  :label="item"
+                  :value="item"/>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="分页显示配置">
+              <el-checkbox-group v-model="dataTable.pagination.layout">
+                <el-checkbox
+                  v-for="item in paginationLayout"
+                  :key="item.value"
+                  :label="item.value">
+                  {{ item.label }}
+                </el-checkbox>
+              </el-checkbox-group>
+            </el-form-item>
+            <el-form-item label="当前页映射">
+              <p>请映射到搜索表单的相关字段（推荐用<code>hidden</code>类型）</p>
+              <el-input
+                v-model="dataTable.pagination.maps.page.key"
+                type="text"/>
+              <p>
+                如果是采用类似（开始行数+每页数量）这种查询条件的话，可以使用过滤器<br>
+                默认会传入<code>page({ curr: '当前页', size: '每页数量' })</code>和<code>form(搜索表单实体对象)</code>，必须返回一个数字，作为映射值<br>
+                如不需要请留空
+              </p>
+              <code-editor v-model="dataTable.pagination.maps.page.filter"/>
+            </el-form-item>
+            <el-form-item label="每页数量映射">
+              <p>请映射到搜索表单的相关字段（推荐用<code>hidden</code>类型）</p>
+              <el-input
+                v-model="dataTable.pagination.maps.size.key"
+                type="text"/>
+            </el-form-item>
+          </template>
+        </el-form>
+
+        <hr>
+        <h3>
+          列表配置
+          <el-button
+            size="small"
+            type="success"
+            icon="el-icon-plus"
+            @click="handleDataTableColumnAdd"/>
+        </h3>
+        <el-form label-width="120px">
+          <el-form-item label="支持默认排序">
+            <el-switch
+              v-model="dataTable.supportSort"
+              active-text="是"
+              inactive-text="否"/>
+          </el-form-item>
+          <el-form-item
+            v-if="dataTable.supportSort"
+            label="默认排序">
+            <el-select v-model="dataTable.defaultSort.prop">
+              <el-option
+                v-for="item in dataTableSortKeyOptions"
+                :key="item.prop"
+                :label="item.label"
+                :value="item.prop"/>
+            </el-select>
+            <el-radio-group v-model="dataTable.defaultSort.order">
+              <el-radio label="ascending">升序</el-radio>
+              <el-radio label="descending">降序</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <el-table :data="dataTable.columns">
+          <el-table-column
+            label="标题"
+            prop="title">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.title"/>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="映射字段"
+            prop="field">
+            <template slot-scope="scope">
+              <el-input v-model="scope.row.field"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="类型">
+            <template slot-scope="scope">
+              {{ scope.row.type | columnTypeFilter }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="排序"
+            prop="sortable">
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.sortable"/>
+            </template>
+          </el-table-column>
+          <el-table-column
+            label="可隐藏"
+            prop="sortable">
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.canHidden"/>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <i
+                :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                @click="handleTableRowUp('dataTable-columns', scope.$index)"/>
+              <i
+                :class="['el-icon-arrow-down', scope.$index == dataTable.columns.length - 1 ? 'disabled' : '']"
+                @click="handleTableRowDown('dataTable-columns', scope.$index)"/>
+              <el-button
+                type="text"
+                @click="handleDataTableColumnEdit(scope.row, scope.$index)">
+                编辑
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleDataTableColumnDelete(scope.$index, scope.row)">
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-form label-width="120px">
+          <el-form-item label="数据列">
+            <p>
+              某些情况下，需要根据请求返回的值修改<code>columns</code><br>
+              如果设置了数据列，参数<code>data</code>，需返回<code>columns</code>
+            </p>
+            <code-editor v-model="dataTable.columnsFilter"/>
+          </el-form-item>
+        </el-form>
+
+        <hr>
+        <h3>操作栏配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="是否显示操作栏">
+            <el-switch
+              v-model="dataTable.operations.show"
+              :width="72"
+              active-text="显示"
+              inactive-text="不显示"/>
+          </el-form-item>
+          <el-form-item label="操作栏标题">
+            <el-input v-model="dataTable.operations.title"/>
+          </el-form-item>
+          <el-form-item label="操作栏宽度">
+            <p>请提供<code>120px</code>这样的值，默认是自动宽度</p>
+            <el-input v-model="dataTable.operations.width"/>
+          </el-form-item>
+          <el-form-item label="对齐方式">
+            <el-select v-model="dataTable.operations.align">
+              <el-option
+                v-for="item in alignTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="操作栏按钮">
+            <el-table :data="dataTable.operations.buttons">
+              <el-table-column
+                label="按钮文本"
+                prop="text"/>
+              <el-table-column label="按钮样式">
+                <template slot-scope="scope">
+                  <el-button
+                    :type="scope.row.klass"
+                    size="small">
+                    {{ scope.row.text }}
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="按钮类型">
+                <template slot-scope="scope">
+                  {{ scope.row.type | buttonTypeFilter }}
+                </template>
+              </el-table-column>
+              <el-table-column :render-header="renderDataTableOperationHeader">
+                <template slot-scope="scope">
+                  <i
+                    :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                    @click="handleTableRowUp('dataTable-buttons', scope.$index)"/>
+                  <i
+                    :class="['el-icon-arrow-down', scope.$index == dataTable.operations.buttons.length - 1 ? 'disabled' : '']"
+                    @click="handleTableRowDown('dataTable-buttons', scope.$index)"/>
+                  <el-button
+                    type="text"
+                    @click="handleDataTableOperationsButtonEdit(scope.row, scope.$index)">
+                    编辑
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleDataTableOperationsButtonDelete(scope.$index, scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+
+        <hr>
+        <h3>批量操作配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="显示批量操作">
+            <el-switch
+              v-model="dataTable.batch.show"
+              :width="72"
+              active-text="显示"
+              inactive-text="不显示"/>
+          </el-form-item>
+          <el-form-item label="批量参数值">
+            <p
+              v-html="`
+                  简便参数提交支持三种类型，<code>{&quot;type&quot;: 1}</code>或者<code>[{&quot;name&quot;: &quot;poster_id&quot;, &quot;raw&quot;: &quot;1&quot;}]</code>固定参数，<code>[&quot;id&quot;, &quot;type&quot;]</code>附加当前环境的动态参数，<code>[{&quot;name&quot;: &quot;poster_id&quot;, &quot;value&quot;: &quot;id&quot;}]</code>需要起别名的动态参数。<br>
+                  <code>name</code>是你需要替换后的名称，<code>value</code>是你当前执行环境的值的名称
+                `"/>
+            <el-input
+              v-model="dataTable.batch.params"
+              type="textarea"/>
+          </el-form-item>
+          <el-form-item label="列可选函数">
+            <p>
+              批量操作的列可选函数，返回boolean来控制，参数<code>row</code>,<code>index</code>
+            </p>
+            <code-editor v-model="dataTable.batch.selectable"/>
+          </el-form-item>
+          <el-form-item label="操作栏按钮">
+            <el-table :data="dataTable.batch.buttons">
+              <el-table-column
+                label="按钮文本"
+                prop="text"/>
+              <el-table-column label="按钮样式">
+                <template slot-scope="scope">
+                  <el-button
+                    :type="scope.row.klass"
+                    size="small">
+                    {{ scope.row.text }}
+                  </el-button>
+                </template>
+              </el-table-column>
+              <el-table-column label="按钮类型">
+                <template slot-scope="scope">
+                  {{ scope.row.type | buttonTypeFilter }}
+                </template>
+              </el-table-column>
+              <el-table-column :render-header="renderDataTableOperationHeader">
+                <template slot-scope="scope">
+                  <i
+                    :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                    @click="handleTableRowUp('dataTable-buttons', scope.$index)"/>
+                  <i
+                    :class="['el-icon-arrow-down', scope.$index == dataTable.batch.buttons.length - 1 ? 'disabled' : '']"
+                    @click="handleTableRowDown('dataTable-buttons', scope.$index)"/>
+                  <el-button
+                    type="text"
+                    @click="handleDataTableBatchButtonEdit(scope.row, scope.$index)">
+                    编辑
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleDataTableBatchButtonDelete(scope.$index, scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+
+        <hr >
+        <h3>高级配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="是否本地分页">
+            <el-switch
+              v-model="dataTable.useLocalPagination"
+              active-text="是"
+              inactive-text="否"/>
+          </el-form-item>
+          <el-form-item label="是否本地排序">
+            <el-switch
+              v-model="dataTable.useLocalSort"
+              active-text="是"
+              inactive-text="否"/>
+          </el-form-item>
+          <el-form-item label="总计的位置">
+            <el-radio-group v-model="dataTable.summaryPosition">
+              <el-radio label="first">第一行</el-radio>
+              <el-radio label="last">最后一行</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="排序url配置">
+            <el-table :data="dataTableSortUrls">
+              <el-table-column
+                label="类型"
+                align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.type | dataTableSortUrlTypeFilter }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="是否已配置"
+                align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.config ? '是' : '否' }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="路径"
+                prop="url"/>
+              <el-table-column
+                label="方式"
+                align="center"
+                prop="method"/>
+              <el-table-column
+                label="参数值"
+                align="center"
+                prop="params"/>
+              <el-table-column
+                label="操作"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    @click="handleClearUrlConfig('dataTableSort', scope.row)">
+                    清空
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleSearchFormUrlConfig(scope.row, 'dataTableSort')">
+                    {{ scope.row.config ? '编辑' : '配置' }}
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+
+      <el-tab-pane
+        label="图表"
+        name="chart">
+        <h3>基础配置</h3>
+        <el-form label-width="120px">
+          <el-form-item label="图表标题">
+            <el-input
+              v-model="chart.title"
+              type="text"/>
+          </el-form-item>
+          <el-form-item label="y坐标格式">
+            <el-input
+              v-model="chart.yAxisFormatter"
+              type="text"/>
+          </el-form-item>
+          <el-form-item label="x坐标键值">
+            <el-select
+              v-model="chart.xAxisKey.key"
+              clearable
+              placeholder="x坐标键值">
+              <el-option
+                v-for="item in chartxAxisKeyOptions"
+                :key="item.value"
+                :value="item.value"
+                :label="item.label"
+                :disabled="item.disabled"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="x坐标其他配置">
+            <p>参考<a
+              href="http://echarts.baidu.com/option.html#xAxis.axisLabel.rotate"
+              target="_blank">EChart</a>,为一段JSON</p>
+            <code-editor
+              v-model="chart.xAxisKey.options"
+              mode="json"/>
+          </el-form-item>
+          <el-form-item label="图表系列">
+            <el-table :data="chart.seriesKeys">
+              <el-table-column
+                label="名称"
+                prop="name"/>
+              <el-table-column
+                label="键值"
+                prop="key"/>
+              <el-table-column label="类型">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.type=='line' ? '线性图' : '柱状图' }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="默认显示"
+                prop="defaultShow">
+                <template slot-scope="scope">
+                  <el-checkbox v-model="scope.row.defaultShow"/>
+                </template>
+              </el-table-column>
+              <el-table-column :render-header="renderChartSeriesOperationColumn">
+                <template slot-scope="scope">
+                  <i
+                    :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                    @click="handleTableRowUp('chart-series', scope.$index)"/>
+                  <i
+                    :class="['el-icon-arrow-down', scope.$index == chart.seriesKeys.length - 1 ? 'disabled' : '']"
+                    @click="handleTableRowDown('chart-series', scope.$index)"/>
+                  <el-button
+                    type="text"
+                    @click="handleChartSeriesEdit(scope.row, scope.$index)">
+                    编辑
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleChartSeriesDelete(scope.$index, scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+
+      <el-tab-pane
+        label="对话框"
+        name="dialogs">
+        <h3>
+          对话框列表
+          <el-button
+            type="success"
+            size="small"
+            icon="el-icon-plus"
+            @click="handleDialogsItemAdd"/>
+        </h3>
+        <el-table :data="dialogList">
+          <el-table-column
+            label="名称"
+            prop="name"/>
+          <el-table-column
+            label="是否已配置表单"
+            prop="isConfigFields"
+            align="center"/>
+          <el-table-column
+            label="是否已配置请求接口"
+            prop="isConfigUrls"
+            align="center"/>
+          <el-table-column
+            label="操作"
+            align="center">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                @click="handleDialogsItemEdit(scope.row.raw, false, scope.$index)">
+                编辑
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleDialogsItemEdit(scope.row.raw, true, scope.$index)">
+                复制新增
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleDialogsItemDelete(scope.row.raw, scope.$index)">
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-tab-pane>
     </el-tabs>
 
     <footer class="factory-footer">
@@ -365,41 +866,6 @@
           @click="handleUrlDialogSave">
           保存
         </el-button>
-      </div>
-    </el-dialog>
-
-    <el-dialog
-      :visible.sync="navDialog.visible"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
-      title="导航配置"
-      class="dialog-nav"
-      @close="handleNavDialogClose">
-      <el-form label-width="130px">
-        <el-form-item label="文本">
-          <el-input
-            v-model="navEntity.text"
-            type="text"/>
-        </el-form-item>
-        <el-form-item label="是否处于选中状态">
-          <el-switch
-            v-model="navEntity.active"
-            active-text="是"
-            inactive-text="否"/>
-        </el-form-item>
-        <el-form-item label="路径">
-          <el-input
-            v-model="navEntity.path"
-            type="text"/>
-        </el-form-item>
-      </el-form>
-      <div slot="footer">
-        <el-button
-          type="default"
-          @click="handleNavDialogClose">关闭</el-button>
-        <el-button
-          type="primary"
-          @click="handleNavDialogSave">保存</el-button>
       </div>
     </el-dialog>
 
@@ -1044,27 +1510,919 @@
       </div>
     </el-dialog>
 
+    <el-dialog
+      :visible.sync="valueDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="键值配置"
+      class="dialog-value"
+      size="tiny"
+      @close="handleButtonDialogClose">
+      <el-form
+        label-width="80px"
+        label-position="top">
+        <el-form-item :label="valueDialog.nameLabel">
+          <el-input v-model="valueEntity.name"/>
+        </el-form-item>
+        <el-form-item :label="valueDialog.valueLabel">
+          <el-input v-model="valueEntity.value"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleValueDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleValueDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="columnShowDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="显示列"
+      class="dialog-column-show"
+      size="tiny"
+      @close="handleButtonDialogClose">
+      <el-form
+        label-width="80px"
+        label-position="top">
+        <el-checkbox-group v-model="columnShowDialog.columnFields">
+          <el-checkbox
+            v-for="item of fieldTableColumnHiddenData"
+            :label="item.field"
+            :key="item.field">{{ item.title }}</el-checkbox>
+        </el-checkbox-group>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleColumnShowDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleColumnShowDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="buttonDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="按钮配置"
+      class="dialog-button"
+      @close="handleButtonDialogClose">
+      <el-form label-width="120px">
+        <el-form-item label="按钮类型">
+          <el-select v-model="buttonEntity.type">
+            <el-option
+              v-for="item in supportButtonTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="按钮文本">
+          <el-input
+            v-model="buttonEntity.text"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="按钮样式">
+          <el-radio
+            v-for="type in ['default', 'info', 'primary', 'success', 'warning', 'danger', 'text']"
+            v-model="buttonEntity.klass"
+            :key="type"
+            :label="type">
+            <el-button
+              :type="type"
+              size="small"
+              @click="handleButtonChoiceKlass(type)">
+              按钮
+            </el-button>
+          </el-radio>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'link' || buttonEntity.type == 'router'"
+          label="链接地址">
+          <p v-if="buttonEntity.type == 'link'">
+            可以使用<code><%= props.prop %></code>来注入变量到链接
+          </p>
+          <el-input
+            v-model="buttonEntity.options.path"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'link'"
+          label="链接打开方式">
+          <el-select v-model="buttonEntity.options.target">
+            <el-option
+              v-for="item in buttonTargetTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'router'"
+          label="路由名称">
+          <el-select v-model="buttonEntity.options.name">
+            <el-option
+              v-for="item in namedRouter"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <template v-if="buttonEntity.type == 'router'">
+          <!-- params与query方式可能需要同时都支持 -->
+          <el-form-item
+            v-for="item in routerParamsTypes"
+            :label="item+'链接参数'"
+            :key="item">
+            <p>
+              简便参数提交支持三种类型，<code>{"type": 1}</code>固定参数，<code>["id", "type"]</code>附加当前环境的动态参数，<code>[{"name": "poster_id", "value": "id"}]</code>需要起别名的动态参数。
+            </p>
+            <el-input
+              v-model="buttonEntity.options[item+'Params']"
+              type="text"/>
+          </el-form-item>
+        </template>
+        <el-form-item
+          v-if="buttonEntity.type == 'dialog'"
+          label="对话框框">
+          <p
+            v-if="Object.keys(dialogs).length == 0"
+            class="red">
+            请先添加对话框
+          </p>
+          <el-select v-model="buttonEntity.options.name">
+            <el-option
+              v-for="(dialog, name) in dialogs"
+              :key="name"
+              :label="name"
+              :value="name"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'dialog'"
+          label="对话框状态">
+          <el-select v-model="buttonEntity.options.status">
+            <el-option
+              v-for="item in dialogStatus"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'dialog' && buttonEntity.options.type != 'add'"
+          label="是否是异步">
+          <p>如果是异步请求数据，请配置接口请求。如果是非异步数据，则采用数据列表的当前行作为数据源填充</p>
+          <el-switch
+            v-model="buttonEntity.isAsync"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.isAsync"
+          label="请求接口配置">
+          <el-button
+            type="info"
+            size="small"
+            @click="handleButtonAsyncConfigOpen">
+            配置数据请求
+          </el-button>
+          <el-table
+            :data="[buttonEntity.options]"
+            class="table-button-async-config">
+            <el-table-column label="接口路径">
+              <template slot-scope="scope">
+                <span :class="[scope.row.url ? '' : 'red']">
+                  {{ scope.row.url ? scope.row.url : '未设置' }}
+                </span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="请求方式"
+              prop="method"
+              align="center"/>
+            <el-table-column label="过滤器">
+              <template
+                slot-scope="scope"
+                align="center">
+                <span :class="[scope.row.filter ? '' : 'red']">
+                  {{ scope.row.filter ? '已设置' : '未设置' }}
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'confirm'"
+          label="确认框消息提示">
+          <el-input v-model="buttonEntity.options.confirmMessage"/>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'iframe'"
+          label="标题">
+          <p>
+            可以使用字符串替换，默认会传入<code>data</code>和<code>searchForm</code>作为参数。<br>
+            <code>data</code>为当前环境的数据，例如在数据列表中则为当前行数据，<code>searchForm</code>是搜索表单的值<br>
+            请使用<code><%= data.id %></code>这样的字符串来做值替换
+          </p>
+          <el-input
+            v-model="buttonEntity.options.title"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'iframe'"
+          label="地址">
+          <p>
+            可以使用字符串替换，默认会传入<code>data</code>和<code>searchForm</code>作为参数。<br>
+            <code>data</code>为当前环境的数据，例如在数据列表中则为当前行数据，<code>searchForm</code>是搜索表单的值<br>
+            请使用<code><%= data.id %></code>这样的字符串来做值替换<br>
+            如果是用于内部链接的打开可以增加<code>__fullscreen=true</code>来实现模块全屏（隐藏了侧边栏和顶栏）
+          </p>
+          <el-input
+            v-model="buttonEntity.options.src"
+            :rows="4"
+            type="textarea"/>
+        </el-form-item>
+        <el-form-item
+          v-if="buttonEntity.type == 'iframe'"
+          label="窗口大小">
+          <el-select v-model="buttonEntity.options.size">
+            <el-option
+              v-for="item in dialogSizeTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="['confirm', 'dialog', 'request', 'link', 'router', 'iframe'].indexOf(buttonEntity.type) != -1"
+          label="是否显示过滤器">
+          <p v-html="buttonDialog.showFilterMessage"/>
+          <code-editor v-model="buttonEntity.options.showFilter"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleButtonDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleButtonDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="columnDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="列配置"
+      class="dialog-column"
+      @close="handleColumnDialogClose">
+      <el-form label-width="120px">
+        <el-form-item label="列显示类型">
+          <el-select v-model="columnEntity.type">
+            <el-option
+              v-for="item in columnTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="列标题">
+          <el-input
+            v-model="columnEntity.title"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="映射字段">
+          <el-input
+            v-model="columnEntity.field"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'router'"
+          label="链接样式">
+          <el-radio
+            v-for="type in ['default', 'info', 'primary', 'success', 'warning', 'danger', 'text']"
+            v-model="columnEntity.klass"
+            :key="type"
+            :label="type">
+            <el-button
+              :type="type"
+              size="small"
+              @click="handleButtonChoiceKlass(type)">
+              按钮
+            </el-button>
+          </el-radio>
+        </el-form-item>
+        <el-form-item label="可排序">
+          <el-switch
+            v-model="columnEntity.sortable"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item label="可隐藏">
+          <el-switch
+            v-model="columnEntity.canHidden"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.canHidden"
+          label="所属组">
+          <el-input
+            v-model="columnEntity.group"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'time'"
+          label="时间格式">
+          <p>年 yyyy，月 MM，日 dd，小时 HH，分 mm，秒 ss</p>
+          <el-input
+            v-model="columnEntity.format"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="对齐方式">
+          <el-select v-model="columnEntity.align">
+            <el-option
+              v-for="item in alignTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="宽度">
+          <p>默认是自动宽度，请输入<code>120px</code>这样的像素值</p>
+          <el-input
+            v-model="columnEntity.width"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="['plain', 'link', 'router'].indexOf(columnEntity.type) != -1"
+          label="固定文本">
+          <el-input
+            v-model="columnEntity.text"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'enum'"
+          label="枚举映射值">
+          <cf-object-table
+            :data="columnEntity.maps"
+            :render-header="renderColumnMapsOperationColumn">
+            <template slot-scope="scope">
+              <el-button
+                type="text"
+                @click="handleColumnMapsEdit(scope.row)">
+                编辑
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleColumnMapsDelete(scope.row)">
+                删除
+              </el-button>
+            </template>
+          </cf-object-table>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'link' || columnEntity.type == 'router'"
+          label="链接地址">
+          <p v-if="columnEntity.type == 'link'">
+            可以使用<code><%= props.prop %></code>来注入变量到链接
+          </p>
+          <el-input
+            v-model="columnEntity.options.path"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'link'"
+          label="链接打开方式">
+          <el-select v-model="columnEntity.options.target">
+            <el-option
+              v-for="item in buttonTargetTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'router'"
+          label="路由名称">
+          <el-select v-model="columnEntity.options.name">
+            <el-option
+              v-for="item in namedRouter"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <template v-if="columnEntity.type == 'router'">
+          <!-- params与query方式可能需要同时都支持 -->
+          <el-form-item
+            v-for="item in routerParamsTypes"
+            :label="item+'链接参数'"
+            :key="item">
+            <p>
+              简便参数提交支持三种类型，<code>{"type": 1}</code>固定参数，<code>["id", "type"]</code>附加当前环境的动态参数，<code>[{"name": "poster_id", "value": "id"}]</code>需要起别名的动态参数。
+            </p>
+            <el-input
+              v-model="columnEntity.options[item+'Params']"
+              type="text"/>
+          </el-form-item>
+        </template>
+        <el-form-item
+          v-if="columnEntity.type == 'other-component'"
+          label="组件名">
+          <el-input
+            v-model="columnEntity.componentName"
+            type="text"/>
+        </el-form-item>
+        <el-form-item
+          v-if="columnEntity.type == 'inner'"
+          label="回调函数">
+          <p>
+            该回调函数已经动态绑定了<code>this</code>对象为当前<code>Generator</code>页面对象，请谨慎修改使用。<br>
+            默认会传入一个<code>data</code>对象，这个对象的值是当前行的数据。
+          </p>
+          <code-editor v-model="columnEntity.options.callback"/>
+        </el-form-item>
+        <el-form-item label="是否显示">
+          <p>
+            是否显示该列，默认为显示<br>
+            函数会传入一个<code>searchForm</code>对象，是当前的搜索条件内容。
+          </p>
+          <code-editor v-model="columnEntity.showFilter"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleColumnDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleColumnDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogItemDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="对话框配置"
+      class="dialog-dialogitem"
+      @close="handleDialogItemDialogClose">
+      <el-form label-width="120px">
+        <el-form-item label="对话框类型">
+          <el-select v-model="dialogEntity.type">
+            <el-option
+              v-for="item in dialogTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="名称">
+          <el-input
+            v-model="dialogEntity.name"
+            placeholder="只能输入英文"/>
+        </el-form-item>
+        <el-form-item
+          v-if="dialogEntity.type != 'template'"
+          label="标签宽度">
+          <el-input v-model="dialogEntity.labelWidth"/>
+        </el-form-item>
+        <el-form-item label="对话框大小">
+          <el-select v-model="dialogEntity.size">
+            <el-option
+              v-for="item in dialogSizeTypes"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否统一标题">
+          <el-switch
+            v-model="dialogItemDialog.isSameTitle"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item
+          v-if="dialogItemDialog.isSameTitle"
+          label="统一标题">
+          <el-input v-model="dialogEntity.title"/>
+        </el-form-item>
+        <el-form-item
+          v-if="!dialogItemDialog.isSameTitle"
+          label="各类型标题">
+          <p>新增类型的标题</p>
+          <el-input v-model="dialogEntity.titles.add"/>
+          <p>编辑类型的标题</p>
+          <el-input v-model="dialogEntity.titles.edit"/>
+          <p>查看类型的标题</p>
+          <el-input v-model="dialogEntity.titles.view"/>
+        </el-form-item>
+        <template v-if="dialogEntity.type == 'template'">
+          <el-form-item label="模板">
+            <p>
+              请直接写vue的template的代码，默认会注入<code>data</code>（对话框的请求返回值实体）<br>
+              <code>dynamic</code>设置自定义属性
+            </p>
+            <code-editor
+              v-model="dialogEntity.template"
+              mode="html"/>
+          </el-form-item>
+          <el-form-item label="自定义属性">
+            <el-table
+              key="dialog-props-table"
+              :data="dialogEntity.props">
+              <el-table-column
+                label="属性名"
+                prop="name"
+                align="center"/>
+              <el-table-column
+                label="属性值"
+                prop="value"
+                align="center"/>
+              <el-table-column
+                :render-header="renderDialogPropsOperationColumn"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    @click="handleDialogPropEdit(scope.row, scope.$index)">
+                    编辑
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleDialogPropDelete(scope.$index)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+          <el-form-item label="样式">
+            <p>
+              样式会在对话框创建的时候生成，在整个页面销毁的时候去除，只针对当前页面有效。
+            </p>
+            <code-editor
+              v-model="dialogEntity.css"
+              mode="css"/>
+          </el-form-item>
+        </template>
+        <template v-else>
+          <el-form-item label="表单控件">
+            <el-table
+              :data="dialogEntity.fields">
+              <el-table-column
+                label="标题"
+                prop="title"/>
+              <el-table-column
+                label="key值"
+                prop="key"/>
+              <el-table-column
+                label="类型"
+                prop="type">
+                <template slot-scope="scope">
+                  {{ scope.row.type | fieldTypeFilter }}
+                </template>
+              </el-table-column>
+              <el-table-column
+                :render-header="renderDialogFieldOperationHeader">
+                <template slot-scope="scope">
+                  <i
+                    :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                    @click="handleTableRowUp('dialog-fields', scope.$index)"/>
+                  <i
+                    :class="['el-icon-arrow-down', scope.$index == dialogEntity.fields.length - 1 ? 'disabled' : '']"
+                    @click="handleTableRowDown('dialog-fields', scope.$index)"/>
+                  <el-button
+                    type="text"
+                    @click="handleDialogFieldEdit(scope.row, scope.$index)">
+                    编辑
+                  </el-button>
+                  <el-button
+                    type="text"
+                    @click="handleDialogFieldDelete(scope.$index, scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+          <el-form-item label="编辑状态时不可修改">
+            <el-checkbox-group v-model="dialogEntity.options.edit.disabled">
+              <el-checkbox
+                v-for="item in dialogEntity.fields"
+                :key="item.key"
+                :label="item.key">
+                {{ item.title }}
+              </el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="是否自定义按钮">
+            <el-switch
+              v-model="dialogItemDialog.isDynamicButton"
+              active-text="是"
+              inactive-text="否"/>
+          </el-form-item>
+          <el-form-item
+            v-if="!dialogItemDialog.isDynamicButton"
+            label="保存接口配置">
+            <el-table
+              :data="dialogUrls">
+              <el-table-column
+                label="类型"
+                align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.type | dialogUrlTypeFilter }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="是否已配置"
+                align="center">
+                <template slot-scope="scope">
+                  <span>{{ scope.row.config ? '是' : '否' }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                label="路径"
+                prop="url"/>
+              <el-table-column
+                label="方式"
+                align="center"
+                prop="method"/>
+              <el-table-column
+                label="参数值"
+                align="center"
+                prop="params"/>
+              <el-table-column
+                label="操作"
+                align="center">
+                <template slot-scope="scope">
+                  <el-button
+                    type="text"
+                    @click="handleDialogUrlConfig(scope.row)">
+                    {{ scope.row.config ? '编辑' : '配置' }}
+                  </el-button>
+                  <el-button
+                    v-if="scope.row.config"
+                    type="text"
+                    @click="handleDialogUrlClear(scope.row)">
+                    清空配置
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </template>
+        <el-form-item
+          v-if="dialogItemDialog.isDynamicButton || dialogEntity.type == 'template'"
+          label="按钮配置">
+          <el-table
+            key="dialog-buttons-table"
+            :data="dialogEntity.buttons">
+            <el-table-column
+              label="按钮文本"
+              prop="text"/>
+            <el-table-column label="按钮样式">
+              <template slot-scope="scope">
+                <el-button
+                  :type="scope.row.klass"
+                  size="small">
+                  {{ scope.row.text }}
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="按钮类型">
+              <template slot-scope="scope">
+                {{ scope.row.type | buttonTypeFilter }}
+              </template>
+            </el-table-column>
+            <el-table-column :render-header="renderDialogButtonOperationHeader">
+              <template slot-scope="scope">
+                <i
+                  :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
+                  @click="handleTableRowUp('dialog-buttons', scope.$index)"/>
+                <i
+                  :class="['el-icon-arrow-down', scope.$index == dialogEntity.buttons.length - 1 ? 'disabled' : '']"
+                  @click="handleTableRowDown('dialog-buttons', scope.$index)"/>
+                <el-button
+                  type="text"
+                  @click="handleDialogButtonEdit(scope.row, scope.$index)">
+                  编辑
+                </el-button>
+                <el-button
+                  type="text"
+                  @click="handleDialogButtonDelete(scope.$index, scope.row)">
+                  删除
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleDialogItemDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleDialogItemDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="navDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="导航配置"
+      class="dialog-nav"
+      @close="handleNavDialogClose">
+      <el-form label-width="130px">
+        <el-form-item label="文本">
+          <el-input
+            v-model="navEntity.text"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="是否处于选中状态">
+          <el-switch
+            v-model="navEntity.active"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item label="路径">
+          <el-input
+            v-model="navEntity.path"
+            type="text"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleNavDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleNavDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="chartSeriesDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="图表项配置"
+      class="dialog-nav"
+      @close="handleChartSeriesDialogClose">
+      <el-form label-width="130px">
+        <el-form-item label="图表项">
+          <el-select
+            v-model="chartSeriesEntity.key"
+            placeholder="图表项">
+            <el-option
+              v-for="item in chartSeriesKeyOptions"
+              :key="item.value"
+              :value="item.value"
+              :label="item.label"
+              :disabled="item.disabled"/>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="图表类型">
+          <el-select
+            v-model="chartSeriesEntity.type"
+            placeholder="图表项">
+            <el-option
+              v-for="item in ['line', 'bar']"
+              :key="item"
+              :value="item"
+              :label="item"/>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleChartSeriesDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleChartSeriesDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="uploadDialog.visible"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      title="上传配置"
+      class="dialog-upload"
+      @close="handleUploadDialogClose">
+      <el-form label-width="120px">
+        <el-form-item label="上传请求路径">
+          <el-input
+            v-model="uploadEntity.action"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="上传请求参数名">
+          <el-input
+            v-model="uploadEntity.name"
+            type="text"/>
+        </el-form-item>
+        <el-form-item label="是否携带Cookie">
+          <el-switch
+            v-model="uploadEntity.withCredentials"
+            active-text="是"
+            inactive-text="否"/>
+        </el-form-item>
+        <el-form-item label="上传前处理">
+          <p>函数会传入一个 file 对象，是当前的上传文件对象，参考 el-upload 组件 before-upload 钩子。</P>
+          <code-editor v-model="uploadEntity.beforeUpload"/>
+        </el-form-item>
+        <el-form-item label="上传成功后处理">
+          <code-editor v-model="uploadEntity.uploadSuccess"/>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button
+          type="default"
+          @click="handleUploadDialogClose">关闭</el-button>
+        <el-button
+          type="primary"
+          @click="handleUploadDialogSave">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
-<script>
-import factoryScreen from './js/factoryScreen'
 
-export default factoryScreen
+<script>
+  import factoryScreen from './js/factoryScreen'
+
+  export default factoryScreen
 </script>
-<style lang="scss">
-.factory-wrapper{
-  width: 100%;
-  padding-bottom: 60px;
-  .factory-footer{
-    margin-top: 22px;
-    text-align: right;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: #fff;
-    padding: 10px 20px;
-    z-index: 90;
-  }
-}
+
+<style lang="stylus">
+  .factory-wrapper
+    width 100%
+    padding-bottom 60px
+    .top-generator-page
+      margin-bottom 15px
+    .factory-footer
+      margin-top 22px
+      text-align right
+      position fixed
+      bottom 0
+      left 0
+      right 0
+      background-color #fff
+      padding 10px 20px
+      z-index 90
+    .el-card
+      width 100%
+    hr
+      margin-top 22px
+      border-color rgba(170, 170, 170, 0.36)
+    .dialog-url, .dialog-field, .dialog-button
+      .el-row
+        margin-bottom 20px
+        &:last-child
+          margin-bottom: 0;
+      .form-label
+        text-align right
+        padding-right 12px
+    .table-field-async-config, .table-button-async-config
+      margin-top 12px
+    .el-form-item__content
+      p:first-child
+        margin-top 0
+    .el-icon-arrow-up, .el-icon-arrow-down
+      color #20a0ff
+      cursor pointer
+      margin-right 10px
+      &.disabled
+        color #ccc
+        cursor not-allowed
+    .prop-desc-list
+      margin-top 12px
+      dl
+        border 1px solid #ccc
+        border-bottom none
+        margin 0
+        overflow hidden
+        &:first-of-type
+          border-radius 5px 5px 0 0
+        &:last-of-type
+          border-bottom 1px solid #ccc
+          border-radius 0 0 5px 5px
+      dt
+        float left
+        width 130px
+        padding-left 12px
+        background #f3f3f3
+      dd
+        margin-left 130px
+        padding-left 12px
 </style>
