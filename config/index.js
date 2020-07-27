@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-03-27 18:20:45
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-03-31 17:38:00
+ * @LastEditTime: 2020-07-27 14:22:36
  */
 'use strict'
 // Template version: 1.3.1
@@ -12,6 +12,7 @@ const path = require('path')
 module.exports = {
   dev: {
     // Paths
+    env: require('./dev.env'),
     assetsSubDirectory: "static",
     assetsPublicPath: "/",
     proxyTable: {
@@ -26,7 +27,7 @@ module.exports = {
     },
 
     // Various Dev Server settings
-    host: "localhost", // can be overwritten by process.env.HOST
+    // host: "localhost", // can be overwritten by process.env.HOST
     port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
@@ -69,7 +70,7 @@ module.exports = {
      * Source Maps
      */
 
-    productionSourceMap: true,
+    productionSourceMap: false,
     // https://webpack.js.org/configuration/devtool/#production
     devtool: "#source-map",
 

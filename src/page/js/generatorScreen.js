@@ -11,7 +11,7 @@ import 'echarts/lib/component/tooltip'
 import quicksort from '../../lib/quicksort';
 import Config from '../../lib/config';
 import Helper from '../../lib/helper';
-import request from '../../lib/http';
+import request from '../../lib/common/request';
 import Expose from '../../lib/expose';
 import Bus from '../../lib/bus';
 import FormItem from '../../components/FormItem'
@@ -2246,7 +2246,7 @@ export default {
           this.pageLoading = false
           requestCancelObj.configCancelFn = null
           if (res) {
-
+            console.log(res)
             this.before_setPageConfig(res, setPageConfig)
           }
         }).catch((e) => {
@@ -2277,6 +2277,7 @@ export default {
     },
 
     before_setPageConfig(pageConfig, fn) {
+      console.log(pageConfig.page);
       if (pageConfig.page.before_setPageConfig) {
         Promise.all(pageConfig.page.before_setPageConfig.map(config => {
           return new Promise((resolve, reject) => {

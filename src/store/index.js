@@ -1,3 +1,8 @@
+/*
+ * @Date: 2020-07-23 14:57:09
+ * @LastEditors: PoloHuang
+ * @LastEditTime: 2020-07-27 10:14:14
+ */
 import Vue from 'vue'
 import Vuex from 'vuex'
 import createLogger from 'vuex/dist/logger'
@@ -18,5 +23,5 @@ export default new Vuex.Store({
   state,
   getters,
   actions,
-  mutations,
+  mutations
 })

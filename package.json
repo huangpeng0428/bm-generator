@@ -5,7 +5,7 @@
   "author": "huangpeng <huangpeng@meizu.com>",
   "private": true,
   "scripts": {
-    "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
+    "dev": "cross-env PORT=8668 node build/dev-server.js",
     "start": "npm run dev",
     "unit": "jest --config test/unit/jest.conf.js --coverage",
     "e2e": "node test/e2e/runner.js",
@@ -18,6 +18,8 @@
     "coffee-tmpl": "^1.2.5",
     "element-ui": "^2.13.0",
     "exportjs": "^0.2.2",
+    "mockjs": "^1.1.0",
+    "module": "^1.2.5",
     "qs": "^6.9.3",
     "quill": "^1.2.4",
     "quill-delta": "^3.5.0",

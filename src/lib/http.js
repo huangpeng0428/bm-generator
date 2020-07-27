@@ -1,44 +1,86 @@
 /*
  * @Date: 2020-03-27 18:20:45
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-07-23 14:23:48
+ * @LastEditTime: 2020-07-27 16:32:56
  */
 import axios from 'axios';
-import expose from './expose';
 import qs from 'qs';
-
+const ERROR_MSG = '服务器错误，请稍候再试';
 const request = axios.create({
   crossDomain: true,
   withCredentials: true
 });
-
 request.defaults.headers.post['Content-Type'] =
-  'application/x-www-form-urlencoded; charset=UTF-8';
+  'application/x-www-form-urlencoded';
 
 // Add a request interceptor
 request.interceptors.request.use(
   function(config) {
 
-    // Do something before request is sent
-    // 重构 url;
-    if (
-      typeof config.baseURL == 'undefined' &&
-      config.url.indexOf('http://') != 0 &&
-      config.url.indexOf('https://') != 0
-    ) {
-      config.url = expose.HOST + `/${config.url}`.replace('//', '/');
-    }
-    if (config.data && !~config.url.indexOf('upload')) {
+    // Add params.t=[now] when request method is GET
+    if (config.method === 'get') {
+      let params = config.params || {};
+      if (params.nocache) {
+        params.t = new Date().getTime();
+        config.params = params;
+        delete params.nocache;
+      }
+    } else if (config.data) {
       config.data = qs.stringify(config.data);
     }
+
     return config;
   },
   function(error) {
-
-    // Do something with request error
-    console.log(error);
     return Promise.reject(error);
   }
 );
+
+// Add a response interceptor
+request.interceptors.response.use(
+  function(response) {
+    console.log('response', response);
+    const data = response.data;
+    if (data instanceof Object) {
+      if (data && data.code === 198001) {
+        if (~data.message.indexOf('登录')) {
+          window.location.href = '/uc/login';
+          return;
+        }
+      }
+      if (data && data.code === 198000) {
+        if (~data.message.indexOf('授权')) {
+          window.location.href = '/logout';
+          return;
+        }
+      }
+      if (data && data.code !== 200) {
+        let message;
+        if (typeof data.message !== 'undefined') {
+          message = data.message;
+        } else if (typeof data.model !== 'undefined') {
+          message = data.model.message;
+        }
+        return Promise.reject(new Error(message || ERROR_MSG));
+      }
+    } else {
+      return Promise.resolve(response);
+
+      // return response
+    }
+    return response.data;
+  },
+  function(error) {
+    console.log('error', error)
+    const message = error.message || ERROR_MSG;
+    return Promise.reject(new Error(message));
+  }
+);
+
+request.export = function(url, { params }) {
+  const { pageSize, pageNumber, ...args } = params;
+  const exportUrl = url + '?' + qs.stringify(args);
+  window.open(exportUrl);
+};
 
 export default request;

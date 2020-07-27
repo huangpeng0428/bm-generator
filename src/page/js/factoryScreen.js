@@ -1,6 +1,6 @@
 import Config from '../../lib/config';
 import Helper from '../../lib/helper';
-import request from '../../lib/http';
+import request from '../../lib/common/request';
 import router from '../../router';
 import CodeEditor from '../../components/CodeEditor';
 import CfObjectTable from '../../components/CfObjectTable';
@@ -2240,6 +2240,7 @@ export default {
       })
         .then(res => {
           this.loading = false;
+          console.log(res.code);
           if (res.code === 200) {
             this.$message({
               type: 'success',

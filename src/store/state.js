@@ -1,3 +1,8 @@
+/*
+ * @Date: 2020-07-23 14:57:09
+ * @LastEditors: PoloHuang
+ * @LastEditTime: 2020-07-27 10:15:07
+ */
 import Enums from '../enums'
 import Helper from '../helper'
 
@@ -9,5 +14,5 @@ export default {
   userInfo: {},
   errors: [],
   navTabs: [],
-  curNavCode: '',
+  curNavCode: ''
 }
