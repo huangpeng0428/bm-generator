@@ -1,9 +1,9 @@
 /*
  * @Date: 2020-07-23 14:57:09
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-07-23 15:09:18
+ * @LastEditTime: 2020-07-28 16:40:17
  */
-import request from '../lib/http'
+import request from '../polo/bm-generator/lib/request'
 import router from '../router'
 
 export default {

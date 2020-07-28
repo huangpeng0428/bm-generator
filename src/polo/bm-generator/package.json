@@ -1,0 +1,27 @@
+{
+  "name": "polo-generator",
+  "version": "1.1.26",
+  "description": "BaseManage项目的公共模块",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "BaseManage",
+    "generator"
+  ],
+  "publishConfig": {
+    "registry": "http://appff.meizu.com:8888"
+  },
+  "author": "guangjie",
+  "license": "ISC",
+  "dependencies": {
+    "brace": "^0.10.0",
+    "axios": "^0.16.1",
+    "vuex": "^2.3.1",
+    "exportjs": "^0.2.2",
+    "coffee-tmpl": "^1.2.5",
+    "element-ui": "^2.1.0",
+    "vue-echarts": "^2.4.0"
+  }
+}

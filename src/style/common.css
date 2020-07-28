@@ -1,0 +1,60 @@
+p{
+  padding: 0;
+  margin: 0;
+}
+ul li {
+  list-style: none;
+}
+.ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/*.el-checkbox {
+  width: 100%;
+}*/
+.el-checkbox-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.dialgo-slot-set .sdk-slot .slot-title{
+  margin: 0 0 15px 0;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;}
+.dialgo-slot-set .sdk-slot .sele-group{
+  display: flex;}
+.dialgo-slot-set .sdk-slot .sele-wrap{
+  display: flex;
+  justify-content: space-between;}
+  .dialgo-slot-set .sdk-slot .sele-wrap .sele-left{
+    width: 60%;}
+  .dialgo-slot-set .sdk-slot .sele-wrap .sele-right{
+    width: 30%;}
+    .dialgo-slot-set .sdk-slot .sele-wrap .sele-right .set-cont{
+      padding-left: 0px;}
+      .dialgo-slot-set .sdk-slot .sele-wrap .sele-right .set-cont .el-switch{
+        left: 200px;}
+      .dialgo-slot-set .sdk-slot .sele-wrap .sele-right .set-cont .slot-list{
+        padding-left: 1.5rem;}
+        .dialgo-slot-set .sdk-slot .sele-wrap .sele-right .set-cont .slot-list .delet{
+          float: right;
+          cursor: pointer;}
+  .dialgo-slot-set .sdk-slot .sele-wrap .set-cont{
+    position: relative;
+    padding-left: 66px;}
+    .dialgo-slot-set .sdk-slot .sele-wrap .set-cont .el-checkbox-group{
+      width: 50%;
+      float: left;
+      padding: 2px 0;}
+    .dialgo-slot-set .sdk-slot .sele-wrap .set-cont .el-switch{
+      position: absolute;
+      left: 0;
+      top: 12px;}
+  .dialgo-slot-set .sdk-slot .sele-wrap .font-bold{
+    font-weight: bold;} 
+.dialgo-slot-set .el-row .dialgo-config{
+  float: right;
+  margin-top: 10px;}
