@@ -485,12 +485,15 @@ export default {
     handleDialogSaveButtonVisible(dialog) {
       let visible = true
 
-      if (
-        !Object.keys(dialog.urls.save).length &&
-        !Object.keys(dialog.urls.add).length &&
-        !Object.keys(dialog.urls.edit).length) {
-        visible = false
-      }
+      // console.log('dialog', dialog.urls);
+      if (!dialog.urls) return
+        if (
+          !Object.keys(dialog.urls.save).length &&
+          !Object.keys(dialog.urls.add).length &&
+          !Object.keys(dialog.urls.edit).length
+        ) {
+          visible = false;
+        }
 
       if (dialog.status === 'disabled' ||
         dialog.status === 'view') {
