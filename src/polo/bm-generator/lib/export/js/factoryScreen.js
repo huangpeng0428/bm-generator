@@ -2091,7 +2091,7 @@ export default {
 
       // let url = '/console/page/meta/save'
       let url = '/meta/save'
-
+      console.log(this.id)
       if (this.id !== 0) {
         url = '/console/page/meta/update'
         params.id = this.id

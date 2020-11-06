@@ -505,6 +505,7 @@ export default {
 
     // 公共按钮点击处理事件
     handleButtonClick(origin, btn, data) {
+      console.log(origin, btn, data)
       console.log('-------------handleButtonClick', origin);
 
       if (origin == 'dataTableBatch' && this.dataTableSelectedRows && this.dataTableSelectedRows.length == 0) { // 如果没有勾选数据
@@ -934,6 +935,7 @@ export default {
 
     // 弹框操作
     handleDialog(name, show, status, extend = {}) {
+      console.log('this.dialogs', this.dialogs);
       const dialog = this.dialogs[name]
       dialog.status = status
       dialog.show = show
@@ -2162,7 +2164,7 @@ export default {
         document.querySelector('head').appendChild(this.styleTag)
       }
 
-      if (this.styleTag.styleSheet) {
+      if (this.styleTag.styleSheet) {   // 创建样式
         this.styleTag.styleSheet.cssText = val
       } else {
         while (this.styleTag.firstChild) {
@@ -2179,7 +2181,7 @@ export default {
         Object.keys(pageConfig).forEach((prop) => {
           if (Config.setup[prop] == undefined) console.warn(prop, Object.keys(pageConfig));
           Helper.correct(Config.setup[prop], pageConfig[prop])
-          this.$set(this.$data, prop, pageConfig[prop])
+          this.$set(this.$data, prop, pageConfig[prop])   // 将每项挂在到vm实例
         })
 
         if (this.page.css) {
@@ -2243,7 +2245,7 @@ export default {
           this.pageLoading = false
           requestCancelObj.configCancelFn = null
           if (res) {
-
+            console.log('res', res)
             this.before_setPageConfig(res, setPageConfig)
           }
         }).catch((e) => {

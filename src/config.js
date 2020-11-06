@@ -1,7 +1,7 @@
 /*
  * @Date: 2020-07-28 14:55:29
  * @LastEditors: PoloHuang
- * @LastEditTime: 2020-07-28 15:51:10
+ * @LastEditTime: 2020-10-21 18:43:25
  */
 import Vue from 'vue';
 import Expose from './polo/bm-generator/lib/expose';
@@ -69,6 +69,7 @@ export default {
     requireComponent.keys().forEach(fileName => {
       const componentConfig = requireComponent(fileName);
       const componentName = fileName.match(/([^/]+)\.vue$/)[1];
+
       Vue.component(
         componentName.replace(/^./, word => word.toUpperCase()),
         componentConfig.default || componentConfig

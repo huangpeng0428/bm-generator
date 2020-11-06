@@ -1,33 +1,56 @@
 <template>
-  <div class="generator-wrapper" v-loading="pageLoading">
+  <div
+    v-loading="pageLoading"
+    class="generator-wrapper">
     <!-- 顶部导航2 -->
-    <cf-navs :navs="page.navs"></cf-navs>
+    <cf-navs :navs="page.navs"/>
 
     <!-- 面包屑导航 -->
-    <el-breadcrumb separator="/" class="breadcrumb-wrap" v-if="breadcrumb.length > 0">
+    <el-breadcrumb
+      v-if="breadcrumb.length > 0"
+      separator="/"
+      class="breadcrumb-wrap">
       <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item :to="item.url ? { path: item.url }: null" v-for="item in breadcrumb" :key="item.title + item.url">{{ item.title | textRouteParse($route.query) }}</el-breadcrumb-item>
+      <el-breadcrumb-item
+        v-for="item in breadcrumb"
+        :to="item.url ? { path: item.url }: null"
+        :key="item.title + item.url">{{ item.title | textRouteParse($route.query) }}</el-breadcrumb-item>
     </el-breadcrumb>
 
     <!-- 页面标题 -->
-    <h2 class="page-title" v-if="breadcrumb.length == 0">{{ page.title | textRouteParse($route.query) }}</h2>
+    <h2
+      v-if="breadcrumb.length == 0"
+      class="page-title">{{ page.title | textRouteParse($route.query) }}</h2>
 
     <!-- 搜索表单 -->
-    <el-card class="box-card" v-if="!hideSearchForm">
+    <el-card
+      v-if="!hideSearchForm"
+      class="box-card">
       <div slot="header">
-        <span>{{searchForm.title}}</span>
+        <span>{{ searchForm.title }}</span>
       </div>
-      <el-form class="search-form"
+      <el-form
         :label-width="searchForm.labelWidth"
-        :model="searchFormInfo">
+        :model="searchFormInfo"
+        class="search-form">
         <el-row>
           <template v-for="entry in searchFormFields">
-            <input v-if="entry.type == 'hidden'" type="hidden" v-model="entry.value" />
-            <component v-else-if="entry.type == 'other-component'"
-                v-bind:is="entry.componentName"
-                :field="entry"
-                :key="pageCode + 'other-component-' + entry.componentName"></component>
-            <el-col v-else :xs="24" :sm="12" :md="8" :lg="6" v-show="entry.show">
+            <input
+              v-if="entry.type == 'hidden'"
+              v-model="entry.value"
+              type="hidden" >
+            <component
+              v-else-if="entry.type == 'other-component'"
+              :is="entry.componentName"
+              :field="entry"
+              :key="pageCode + 'other-component-' + entry.componentName"/>
+            <el-col
+              v-else
+              v-show="entry.show"
+              :xs="24"
+              :sm="12"
+              :md="8"
+              :lg="6">
               <el-form-item
                 :label="entry.title"
                 :prop="Array.isArray(entry.key) ? entry.key[0] : entry.key"
@@ -36,30 +59,29 @@
                 <form-item
                   v-model="entry.value"
                   :field="entry"
-                  origin="searchForm"
                   :extend="searchFormInfo"
+                  origin="searchForm"
                   @syncRefValueChange="syncRefValueChange"
-                  @fieldChangeDoSearch="fieldChangeDoSearch">
-                </form-item>
+                  @fieldChangeDoSearch="fieldChangeDoSearch"/>
               </el-form-item>
             </el-col>
           </template>
         </el-row>
         <el-row>
-          <el-col :span="24" class="search-buttons">
+          <el-col
+            :span="24"
+            class="search-buttons">
             <template v-for="btn in searchForm.buttons">
-               <template v-if="btn.componentName">
-                  <component v-bind:is="btn.componentName">
-                  </component>
-               </template>
-               <template v-else>
+              <template v-if="btn.componentName">
+                <component :is="btn.componentName"/>
+              </template>
+              <template v-else>
                 <cf-button
                   v-if="handleButtonVisible('searchForm', btn, searchFormInfo)"
                   :btn="btn"
                   :data="searchFormInfo"
-                  @click="handleButtonClick('searchForm', btn, searchFormInfo)">
-                </cf-button>
-               </template>
+                  @click="handleButtonClick('searchForm', btn, searchFormInfo)"/>
+              </template>
             </template>
           </el-col>
         </el-row>
@@ -67,9 +89,11 @@
     </el-card>
 
     <!-- 图表 -->
-    <el-card class="box-card" v-if="chart && (searchForm.urls.chart.url || searchForm.urls.chart.urlFilter) && chart.xAxisKey && chart.xAxisKey.key">
+    <el-card
+      v-if="chart && (searchForm.urls.chart.url || searchForm.urls.chart.urlFilter) && chart.xAxisKey && chart.xAxisKey.key"
+      class="box-card">
       <div slot="header">
-        <span>{{chart.title}}</span>
+        <span>{{ chart.title }}</span>
         <!-- <el-checkbox-group class="chart-toggle-title"
           v-if="chart.options.legend"
           v-model="chart.options.legend.data"
@@ -83,42 +107,43 @@
         </el-checkbox-group> -->
       </div>
       <figure class="chart-wrap">
-        <chart :options="chart.options" ref="chart" auto-resize
-          @legendselectchanged="chartLengendSelectedChanged">
-        </chart>
+        <chart
+          ref="chart"
+          :options="chart.options"
+          auto-resize
+          @legendselectchanged="chartLengendSelectedChanged"/>
       </figure>
       <el-checkbox-group
-        class="chart-compare-day"
-        v-model="chart.compare.day"
         v-show="isChartCompareDay"
+        v-model="chart.compare.day"
+        class="chart-compare-day"
         @change="changeChartCompareDay">
         <el-checkbox
           v-for="item in chartCompareDay"
           :key="item.value"
           :label="item.value"
-        >{{item.label}}</el-checkbox>
+        >{{ item.label }}</el-checkbox>
       </el-checkbox-group>
     </el-card>
 
     <!-- 数据列表 -->
     <el-card class="box-card">
       <div slot="header">
-        <span>{{dataTable.title}}</span>
+        <span>{{ dataTable.title }}</span>
       </div>
       <el-table
-        :data="dataTable.data"
         v-loading="dataTable.loading"
-        class="data-table"
+        :data="dataTable.data"
         :row-class-name="dataTableRowClassName"
         :default-sort="dataTable.supportSort ? dataTable.defaultSort : {}"
+        class="data-table"
         @sort-change="handleDataTableSort"
         @selection-change="handleDataTableSelectionChange">
         <el-table-column
           v-if="dataTable.batch.show"
-          type="selection"
           :selectable="rowSelectable"
-          width="55">
-        </el-table-column>
+          type="selection"
+          width="55"/>
         <!-- 添加 filters 为了控制不要点标题排序（用样式隐藏） -->
         <el-table-column
           v-for="(column, columnIndex) in dataTable.columns"
@@ -135,53 +160,66 @@
               v-if="['router', 'link'].indexOf(column.type) != -1"
               :btn="column"
               :data="mixinSearchFormData(scope.row)">
-              {{getColumnValue(column, scope.row, scope.$index, 'list')}}
+              {{ getColumnValue(column, scope.row, scope.$index, 'list') }}
             </cf-button>
             <el-button
               v-else-if="column.type == 'inner'"
               :type="column.klass"
               @click="handleColumnInnerClick(column, scope.row)">
-              {{getColumnValue(column, scope.row, scope.$index, 'list')}}
+              {{ getColumnValue(column, scope.row, scope.$index, 'list') }}
             </el-button>
-            <div class="datatable-column-sort" v-else-if="column.type == 'sort'">
+            <div
+              v-else-if="column.type == 'sort'"
+              class="datatable-column-sort">
               <i
                 :class="['el-icon-arrow-up', scope.$index == 0 ? 'disabled' : '']"
-                @click="handleColumnSortClick(column, scope.row, scope.$index, 'up')">
-              </i>
+                @click="handleColumnSortClick(column, scope.row, scope.$index, 'up')"/>
               <i
                 :class="['el-icon-arrow-down', scope.$index == dataTable.columns.length - 1 ? 'disabled' : '']"
-                @click="handleColumnSortClick(column, scope.row, scope.$index, 'down')">
-              </i>
+                @click="handleColumnSortClick(column, scope.row, scope.$index, 'down')"/>
               <el-popover
                 v-if="dataTable.sortUrls.jump.url"
                 popper-class="popper-column-sort"
                 placement="top"
                 width="200"
                 trigger="click">
-                <el-input v-model="jumpOrder" placeholder="排序编号，越小越前"></el-input>
+                <el-input
+                  v-model="jumpOrder"
+                  placeholder="排序编号，越小越前"/>
                 <div class="action">
-                  <el-button size="mini" type="text" @click="handleSortJump(column, scope.row, scope.$index, 'jump')">确定</el-button>
+                  <el-button
+                    size="mini"
+                    type="text"
+                    @click="handleSortJump(column, scope.row, scope.$index, 'jump')">确定</el-button>
                 </div>
                 <i
-                 
+
                   slot="reference"
                   :class="['el-icon-sort']"
-                  @click="handleColumnSortClick(column, scope.row, scope.$index, 'jump')">
-                </i>
+                  @click="handleColumnSortClick(column, scope.row, scope.$index, 'jump')"/>
               </el-popover>
             </div>
-            <img v-else-if="column.type == 'image'" class="cell-content-img" :src="getColumnValue(column, scope.row, scope.$index, 'list')"/>
-            <div v-else-if="column.type == 'color'" class="cell-content-color">
-              <span :style="{backgroundColor: getColumnValue(column, scope.row, scope.$index, 'list')}"></span>
-              <i>{{getColumnValue(column, scope.row, scope.$index, 'list')}}</i>
+            <img
+              v-else-if="column.type == 'image'"
+              :src="getColumnValue(column, scope.row, scope.$index, 'list')"
+              class="cell-content-img">
+            <div
+              v-else-if="column.type == 'color'"
+              class="cell-content-color">
+              <span :style="{backgroundColor: getColumnValue(column, scope.row, scope.$index, 'list')}"/>
+              <i>{{ getColumnValue(column, scope.row, scope.$index, 'list') }}</i>
             </div>
-            <component v-else-if="column.type == 'other-component'"
-              v-bind:is="column.componentName"
+            <component
+              v-else-if="column.type == 'other-component'"
+              :is="column.componentName"
               :field="scope.row"
-              :key="pageCode + 'other-component-' + column.componentName + Date.now()">
-            </component>
-            <span :a="column.type" class="cell-content-wrap" v-else :title="getColumnValue(column, scope.row, scope.$index, 'list-title')">
-              {{getColumnValue(column, scope.row, scope.$index, 'list')}}
+              :key="pageCode + 'other-component-' + column.componentName + Date.now()"/>
+            <span
+              v-else
+              :a="column.type"
+              :title="getColumnValue(column, scope.row, scope.$index, 'list-title')"
+              class="cell-content-wrap">
+              {{ getColumnValue(column, scope.row, scope.$index, 'list') }}
             </span>
           </template>
         </el-table-column>
@@ -193,19 +231,18 @@
           :align="dataTable.operations.align">
           <template slot-scope="scope">
             <template v-for="btn in dataTable.operations.buttons">
-               <component v-if="btn.type == 'other-component'"
-                v-bind:is="btn.componentName"
+              <component
+                v-if="btn.type == 'other-component'"
+                :is="btn.componentName"
                 :btn="btn"
                 :field="scope.row"
-                :key="pageCode + 'other-component-' + btn.componentName + Date.now()">
-             </component>
+                :key="pageCode + 'other-component-' + btn.componentName + Date.now()"/>
               <template v-else>
                 <cf-button
                   v-if="!scope.row.isSummary && handleButtonVisible('dataTable', btn, scope.row)"
                   :btn="btn"
                   :data="mixinSearchFormData(scope.row)"
-                  @click="handleButtonClick('dataTable', btn, scope.row)">
-                </cf-button>
+                  @click="handleButtonClick('dataTable', btn, scope.row)"/>
               </template>
             </template>
           </template>
@@ -237,29 +274,30 @@
       </el-table> -->
       <el-pagination
         v-if="dataTable.pagination.show"
-        class="data-table-pagination"
-        @size-change="handleDataTableSizeChange"
-        @current-change="handleDataTablePageChange"
         :current-page="dataTable.pagination.currentPage"
         :page-sizes="dataTable.pagination.sizes"
         :page-size="dataTable.pagination.pageSize"
         :layout="dataTable.pagination.layout.join(', ')"
-        :total="dataTable.total">
-      </el-pagination>
-      <div class="batch-action-wrap" v-if="dataTable.batch.show">
+        :total="dataTable.total"
+        class="data-table-pagination"
+        @size-change="handleDataTableSizeChange"
+        @current-change="handleDataTablePageChange"/>
+      <div
+        v-if="dataTable.batch.show"
+        class="batch-action-wrap">
         <template v-for="btn in dataTable.batch.buttons">
-           <template v-if="btn.componentName">
-                  <component v-bind:is="btn.componentName"
-                  :key="btn.options.name">
-                  </component>
-            </template>
-             <template v-else>
-              <el-button 
-                :key="btn.options.name"
-                @click="handleButtonClick('dataTableBatch', btn, dataTable.batch)">
-                {{btn.text}}
-              </el-button>
-            </template>
+          <template v-if="btn.componentName">
+            <component
+              :is="btn.componentName"
+              :key="btn.options.name"/>
+          </template>
+          <template v-else>
+            <el-button
+              :key="btn.options.name"
+              @click="handleButtonClick('dataTableBatch', btn, dataTable.batch)">
+              {{ btn.text }}
+            </el-button>
+          </template>
         </template>
       </div>
     </el-card>
@@ -280,40 +318,55 @@
             :template="dialog.template"
             :css="dialog.css"
             :data="dialog.data"
-            :props="dialog.props">
-          </tmpl-component>
+            :props="dialog.props"/>
         </div>
         <template v-else>
-          <el-form :label-width="dialog.labelWidth" v-if="dialog.status == 'view'">
+          <el-form
+            v-if="dialog.status == 'view'"
+            :label-width="dialog.labelWidth">
             <template v-for="entry in dialog.fields">
-              <component v-if="entry.type == 'other-component'"
-                  v-show="handleFieldVisible(entry, dialogEntities[dialogName], dialog)"
-                  v-model="entry.value"
-                  v-bind:is="entry.componentName"
-                  :field="entry"
-                  :key="pageCode + 'other-component-' + entry.componentName"></component>
-              <el-form-item :label="entry.title" v-else-if="entry.type != 'hidden'">
-                <img v-if="entry.type == 'image'" class="img-item" :src="entry.value"/>
-                <div v-else-if="entry.type == 'rich-text'" v-html="entry.value"></div>
-                <span v-else>{{entry.value | dialogViewFieldValue(entry)}}</span>
+              <component
+                v-if="entry.type == 'other-component'"
+                v-show="handleFieldVisible(entry, dialogEntities[dialogName], dialog)"
+                v-model="entry.value"
+                :is="entry.componentName"
+                :field="entry"
+                :key="pageCode + 'other-component-' + entry.componentName"/>
+              <el-form-item
+                v-else-if="entry.type != 'hidden'"
+                :label="entry.title">
+                <img
+                  v-if="entry.type == 'image'"
+                  :src="entry.value"
+                  class="img-item">
+                <div
+                  v-else-if="entry.type == 'rich-text'"
+                  v-html="entry.value"/>
+                <span v-else>{{ entry.value | dialogViewFieldValue(entry) }}</span>
               </el-form-item>
             </template>
           </el-form>
-          <el-form v-else
+          <el-form
+            v-else
             :label-width="dialog.labelWidth"
             :ref="'form-' + dialogName"
             :model="dialogEntities[dialogName]">
             <template v-for="entry in dialog.fields">
-              <input v-if="entry.type == 'hidden'" type="hidden" v-model="entry.value" />
-              <component v-else-if="entry.type == 'other-component'"
-                  v-show="handleFieldVisible(entry, dialogEntities[dialogName], dialog)"
-                  v-model="entry.value"
-                  v-bind:is="entry.componentName"
-                  :ref="`otherComponent${entry.componentName}`"
-                  :field="entry"
-                  :form-data="dialogEntities[dialogName]"
-                  :key="pageCode + 'other-component-' + entry.componentName"></component>
-              <el-form-item v-else
+              <input
+                v-if="entry.type == 'hidden'"
+                v-model="entry.value"
+                type="hidden" >
+              <component
+                v-else-if="entry.type == 'other-component'"
+                v-show="handleFieldVisible(entry, dialogEntities[dialogName], dialog)"
+                v-model="entry.value"
+                :is="entry.componentName"
+                :ref="`otherComponent${entry.componentName}`"
+                :field="entry"
+                :form-data="dialogEntities[dialogName]"
+                :key="pageCode + 'other-component-' + entry.componentName"/>
+              <el-form-item
+                v-else
                 v-show="handleFieldVisible(entry, dialogEntities[dialogName], dialog)"
                 :label="entry.title"
                 :prop="Array.isArray(entry.key) ? entry.key[0] : entry.key"
@@ -321,28 +374,28 @@
                 <form-item
                   v-model="entry.value"
                   :field="entry"
-                  origin="dialog"
                   :extend="{
                     name: dialogName,
                     dialog: dialog,
                     model: dialogEntities[dialogName],
                   }"
-                  @syncRefValueChange="syncRefValueChange">
-                </form-item>
+                  origin="dialog"
+                  @syncRefValueChange="syncRefValueChange"/>
               </el-form-item>
             </template>
           </el-form>
         </template>
       </div>
-      <div slot="footer" class="dialog-footer">
+      <div
+        slot="footer"
+        class="dialog-footer">
         <template v-if="dialog.buttons && dialog.buttons.length">
           <template v-for="btn in dialog.buttons">
             <cf-button
               v-if="handleButtonVisible('dialog', btn, dialog)"
               :btn="btn"
               :data="dialog.data"
-              @click="handleButtonClick('dialog', btn, dialog)">
-            </cf-button>
+              @click="handleButtonClick('dialog', btn, dialog)"/>
           </template>
         </template>
         <template v-else>
@@ -365,23 +418,32 @@
       :size="iframe.size"
       :title="iframe.title"
       class="iframe-dialog">
-      <iframe :src="iframe.src" frameborder="0"></iframe>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="default" @click="iframe.show = false">
+      <iframe
+        :src="iframe.src"
+        frameborder="0"/>
+      <div
+        slot="footer"
+        class="dialog-footer">
+        <el-button
+          type="default"
+          @click="iframe.show = false">
           关闭
         </el-button>
       </div>
     </el-dialog>
 
     <!-- 导出报表 -->
-    <div class="export-wrapper" v-if="exports.show">
-      <div class="export-title">{{exports.text}}</div>
-      <i class="export-close el-icon-close" @click="exports.show = false"></i>
+    <div
+      v-if="exports.show"
+      class="export-wrapper">
+      <div class="export-title">{{ exports.text }}</div>
+      <i
+        class="export-close el-icon-close"
+        @click="exports.show = false"/>
       <el-progress
         :percentage="exports.percent"
         :status="exports.status"
-        class="export-progress">
-      </el-progress>
+        class="export-progress"/>
     </div>
   </div>
 </template>

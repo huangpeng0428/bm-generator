@@ -1,6 +1,6 @@
 {
   "page": {
-    "title": "代理商管理",
+    "title": "代理商管理1",
     "url": "/generator/agent_manage",
     "css": "",
     "navs": []
