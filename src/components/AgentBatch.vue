@@ -87,34 +87,34 @@
 </template>
 
 <script>
-import request from '../polo/bm-generator/lib/request'
-import Helper from '../helper'
-import TreeTransfer from './common/TreeTransfer'
+import request from "../polo/bm-generator/lib/request";
+import Helper from "../helper";
+import TreeTransfer from "./common/TreeTransfer";
 export default {
   components: {
-    TreeTransfer
+    TreeTransfer,
   },
   props: {
     value: {
       type: Object,
       default() {
-        return {}
-      }
+        return {};
+      },
     },
     field: {
       type: Object,
       default() {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   data() {
     return {
       searchParams: {
-        name: '',
-        agentId: '',
+        name: "",
+        agentId: "",
         type: 2,
-        agentOne: ''
+        agentOne: "",
       },
       agentOneData: [],
       agentList: [],
@@ -123,147 +123,155 @@ export default {
       agentCheckList: [],
       defaultAgents: [],
       treeTransferTitle: {
-        left: '备选代理/广告主',
-        right: '已选代理/广告主'
+        left: "备选代理/广告主",
+        right: "已选代理/广告主",
       },
-      agentOne: '',
+      agentOne: "",
       showConfirmDialog: false,
-      isRender: false
-    }
+      isRender: false,
+    };
   },
   computed: {
     tableData() {
       if (this.defaultAgents.length > 0) {
-        return this.defaultAgents[0].slot.filter(item => {
+        return this.defaultAgents[0].slot.filter((item) => {
           if (this.agentCheckList.indexOf(item.id) > -1) {
-            return item
+            return item;
           }
-        })
+        });
       }
-        return []
-
-    }
+      return [];
+    },
   },
   watch: {
     value(val) {
       // eslint-disable-next-line no-return-assign
-      if (!val) return this.isRender = false
-      if (typeof val === 'object') {
-        this.agentOne = ''
+      if (!val) return (this.isRender = false);
+      if (typeof val === "object") {
+        this.agentOne = "";
         this.searchParams = {
-          name: '',
-          agentId: '',
-          type: '',
-          agentOne: ''
-        }
-        this.agents = []
-        this.agentCheckList = []
-        this.defaultAgents = []
-        this.showConfirmDialog = false
-        this.getAgentOneData()
-        this.getAgentList(this.searchParams)
+          name: "",
+          agentId: "",
+          type: "",
+          agentOne: "",
+        };
+        this.agents = [];
+        this.agentCheckList = [];
+        this.defaultAgents = [];
+        this.showConfirmDialog = false;
+        this.getAgentOneData();
+        this.getAgentList(this.searchParams);
       }
     },
     searchParams: {
       handler(val) {
-        this.getAgentList(val)
+        this.getAgentList(val);
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   created() {
-    this.getAgentOneData()
-    this.getAgentList(this.searchParams)
+    this.getAgentOneData();
+    this.getAgentList(this.searchParams);
   },
   methods: {
     getAgentOneData() {
       request({
-        url: '/console/mdsp/admin/agent/list',
-        method: 'GET',
+        url: "/console/mdsp/admin/agent/list",
+        method: "GET",
         params: {
-          type: 1
-        }
-      }).then(res => {
+          type: 1,
+        },
+      }).then((res) => {
         if (res.code == 200) {
-          this.agentOneData = res.value.data
+          this.agentOneData = res.value.data;
         }
-      })
+      });
     },
     getAgentList(params) {
       request({
-        url: 'console/mdsp/admin/agent/list',
-        method: 'GET',
-        params
-      }).then(res => {
+        url: "console/mdsp/admin/agent/list",
+        method: "GET",
+        params,
+      }).then((res) => {
         if (res.code == 200) {
-          const agentList = res.value.data.map(agent => {
+          const agentList = res.value.data.map((agent) => {
             return {
               name: `${agent.uid} - ${agent.name}`,
-              id: agent.uid
-            }
-          })
+              id: agent.uid,
+            };
+          });
           this.agents = Helper.formatSlotData(
-          [{
-            all: '全选',
-            agents: agentList
-          }], 'all', 'agents')
+            [
+              {
+                all: "全选",
+                agents: agentList,
+              },
+            ],
+            "all",
+            "agents"
+          );
           if (!params.name && !params.agentOne) {
-            this.defaultAgents = Helper.deepCopy(this.agents, [])
-            this.agentTreeTransferShow = true
+            this.defaultAgents = Helper.deepCopy(this.agents, []);
+            this.agentTreeTransferShow = true;
           }
         }
-        this.isRender = true
-      })
+        this.isRender = true;
+      });
     },
     bindAgent(confirm = false) {
-      const agentTwo = this.agentCheckList.join(',')
-      let errorMsg = ''
+      const agentTwo = this.agentCheckList.join(",");
+      let errorMsg = "";
       if (!agentTwo) {
-        errorMsg = '请选择代理/广告主'
+        errorMsg = "请选择代理/广告主";
       } else if (!this.agentOne) {
-        errorMsg = '请选择所属一代'
+        errorMsg = "请选择所属一代";
       }
       if (errorMsg) {
         return this.$msgbox({
-          type: 'error',
-          message: errorMsg
-        })
+          type: "error",
+          message: errorMsg,
+        });
       }
       // eslint-disable-next-line no-return-assign
-      if (!confirm) return this.showConfirmDialog = true
+      if (!confirm) return (this.showConfirmDialog = true);
       request({
-        url: 'console/mdsp/admin/agent/binding/secondAgent',
-        method: 'GET',
+        url: "console/mdsp/admin/agent/binding/secondAgent",
+        method: "GET",
         params: {
           agentOne: this.agentOne,
-          agentTwo
-        }
-      }).then(res => {
+          agentTwo,
+        },
+      }).then((res) => {
         if (res.code == 200) {
-          this.agentOneData = res.value
+          this.agentOneData = res.value;
           this.$msgbox({
-            type: 'success',
-            message: '转移成功'
-          })
-          this.closeDialog(true)
+            type: "success",
+            message: "转移成功",
+          });
+          this.closeDialog(true);
         } else {
           this.$msgbox({
-            type: 'error',
-            message: res.message || '服务端错误'
-          })
+            type: "error",
+            message: res.message || "服务端错误",
+          });
         }
-      })
+      });
     },
     setAgentCheckList(checkedId) {
-      this.agentCheckList = checkedId
+      this.agentCheckList = checkedId;
     },
     closeDialog(flushList = false) {
-      let eles = document.querySelectorAll('.el-dialog__headerbtn')
-      eles[2].click()
-      flushList && document.querySelector('.search-buttons').querySelector('.el-button').click()
-    }
-  }
-}
+      let eles = document.querySelectorAll(".el-dialog__headerbtn");
+      eles[2].click();
+      flushList &&
+        document
+          .querySelector(".search-buttons")
+          .querySelector(".el-button")
+          .click();
+    },
+  },
+};
 </script>
 
 <style lang="stylus" scoped>
@@ -272,6 +280,7 @@ export default {
     height: 400px;
     overflow-y: scroll;
   }
+
   .confirm-wrap {
     position: absolute;
     top: 0;
@@ -282,18 +291,24 @@ export default {
     background: #fff;
     padding: 30px 100px;
   }
+
   .confirm-footer {
-    margin-top 60px;
+    margin-top: 60px;
+
     .el-button {
       float: right;
-      margin-left 10px;
+      margin-left: 10px;
     }
   }
 }
-.btn-wrap
+
+.btn-wrap {
   margin-bottom: -80px;
   overflow: hidden;
-  button
+
+  button {
     float: right;
     margin: 20px 0 0 15px;
+  }
+}
 </style>

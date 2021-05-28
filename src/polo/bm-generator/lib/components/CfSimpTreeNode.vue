@@ -5,107 +5,112 @@
     <div class="content">
       <span class="expand">
         <i
-          :class="['el-icon-arrow-' + (expand ? 'down' : 'right')]"
           v-if="node.children && node.children.length > 0"
-          @click.stop="expand = !expand">
-        </i>
+          :class="['el-icon-arrow-' + (expand ? 'down' : 'right')]"
+          @click.stop="expand = !expand"/>
       </span>
       <el-checkbox
         v-model="node.checked"
         :disabled="node.disabled"
         :indeterminate="indeterminate"
         @change="handleChange">
-        {{node.name}}
+        {{ node.name }}
       </el-checkbox>
     </div>
-    <div class="children" v-show="expand">
+    <div
+      v-show="expand"
+      class="children">
       <cf-simp-tree-node
         v-for="item in node.children"
         :key="item.value"
-        :node="item">
-      </cf-simp-tree-node>
+        :node="item"/>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'CfSimpTreeNode',
+  name: "CfSimpTreeNode",
 
   props: {
     node: {
       type: Object,
+      default() {
+        return {};
+      },
     },
   },
 
   data() {
     return {
       expand: true,
-    }
+    };
   },
 
   computed: {
     indeterminate() {
-      let r = false
-      let checkedCount = 0
-      let uncheckedCount = 0
-      let childCount = 0
+      let r = false;
+      let checkedCount = 0;
+      let uncheckedCount = 0;
+      let childCount = 0;
 
       const fn = (items) => {
         items.forEach((item) => {
           if (!item.disabled) {
-            childCount += 1
+            childCount += 1;
             if (item.checked) {
-              checkedCount += 1
+              checkedCount += 1;
             } else {
-              uncheckedCount += 1
+              uncheckedCount += 1;
             }
           }
 
           if (item.children) {
-            fn(item.children)
+            fn(item.children);
           }
-        })
-      }
+        });
+      };
 
-      console.log(childCount, checkedCount, uncheckedCount)
+      console.log(childCount, checkedCount, uncheckedCount);
 
       if (this.node.children) {
-        fn(this.node.children)
-        r = checkedCount !== 0 && uncheckedCount !== 0
+        fn(this.node.children);
+        r = checkedCount !== 0 && uncheckedCount !== 0;
         if (checkedCount === childCount && uncheckedCount === 0) {
-          this.node.checked = true
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.node.checked = true;
         }
         if (checkedCount === 0 && uncheckedCount === childCount) {
-          this.node.checked = false
+          // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+          this.node.checked = false;
         }
       } else {
-        r = false
+        r = false;
       }
 
-      return r
+      return r;
     },
   },
 
   methods: {
     handleChange(evt) {
-      const checked = evt.target.checked
+      const checked = evt.target.checked;
       /* eslint-disable no-param-reassign */
       const fn = (items) => {
         items.forEach((item) => {
           if (!item.disabled) {
-            item.checked = checked
+            item.checked = checked;
           }
           if (item.children) {
-            fn(item.children)
+            fn(item.children);
           }
-        })
-      }
+        });
+      };
       if (this.node.children) {
-        fn(this.node.children)
+        fn(this.node.children);
       }
       /* eslint-enable no-param-reassign */
     },
   },
-}
+};
 </script>

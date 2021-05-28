@@ -139,10 +139,10 @@
   </div>
 </template>
 <script>
-import validateMixin from '../mixins/validate'
-import request from '../polo/bm-generator/lib/request'
-import { phoneValidator } from '../validators/user'
-import helper from '../helper'
+import validateMixin from "../mixins/validate";
+import request from "../polo/bm-generator/lib/request";
+import { phoneValidator } from "../validators/user";
+import helper from "../helper";
 export default {
   mixins: [validateMixin],
   props: {
@@ -151,162 +151,193 @@ export default {
     field: {
       type: Object,
       default() {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   data() {
     return {
       formData: this.initFormData(),
       rules: {
-        flyme: { required: true, message: '请输入Flyme帐号', trigger: 'change' },
-        name: { required: true, message: '请输入公司名称', trigger: 'change' },
-        contact: { required: true, message: '请输入联系人', trigger: 'change' },
+        flyme: {
+          required: true,
+          message: "请输入Flyme帐号",
+          trigger: "change",
+        },
+        name: { required: true, message: "请输入公司名称", trigger: "change" },
+        contact: { required: true, message: "请输入联系人", trigger: "change" },
         phone: [
-          { required: true, message: '请输入联系电话', trigger: 'change' },
-          { validator: phoneValidator.bind(this, '联系电话'), trigger: 'change' }
+          { required: true, message: "请输入联系电话", trigger: "change" },
+          {
+            validator: phoneValidator.bind(this, "联系电话"),
+            trigger: "change",
+          },
         ],
         email: [
-          { required: true, message: '请输入联系邮箱', trigger: 'change' },
-          { type: 'email', message: '邮箱格式不正确', trigger: 'blur' }
+          { required: true, message: "请输入联系邮箱", trigger: "change" },
+          { type: "email", message: "邮箱格式不正确", trigger: "blur" },
         ],
-        address: { required: true, message: '请输入联系地址', trigger: 'change' },
-        accountType: { required: true, message: '请选择账户类型', trigger: 'change' },
-        agentType: { required: true, message: '请选择代理级别', trigger: 'change' }
+        address: {
+          required: true,
+          message: "请输入联系地址",
+          trigger: "change",
+        },
+        accountType: {
+          required: true,
+          message: "请选择账户类型",
+          trigger: "change",
+        },
+        agentType: {
+          required: true,
+          message: "请选择代理级别",
+          trigger: "change",
+        },
       },
       cityData: [],
       agentOneData: [],
       isView: false,
-      actionType: 'add'
-    }
+      actionType: "add",
+    };
   },
   watch: {
     value(val) {
       if (!val) {
-        this.formData = this.initFormData()
-        this.isView = false
+        this.formData = this.initFormData();
+        this.isView = false;
       } else {
         if (Object.keys(val).length > 0) {
-          this.actionType = 'update'
-          val.depositCity = val.depositCity.split(',')
-          val.accountType = String(val.accountType)
-          val.agentType = String(val.agentType)
-          this.formData = val
-          if (val.hasOwnProperty('isView')) this.isView = val.isView
+          this.actionType = "update";
+          val.depositCity = val.depositCity.split(",");
+          val.accountType = String(val.accountType);
+          val.agentType = String(val.agentType);
+          this.formData = val;
+          if (val.hasOwnProperty("isView")) this.isView = val.isView;
         } else {
-          this.actionType = 'add'
+          this.actionType = "add";
         }
       }
-    }
+    },
   },
   created() {
-    this.getCityData()
-    this.getAgentOneData()
+    this.getCityData();
+    this.getAgentOneData();
   },
   methods: {
     initFormData() {
       return {
-        uid: '',
-        newUid: '',
-        agentType: '1',
-        flyme: '',
-        name: '',
-        contact: '',
-        phone: '',
-        email: '',
-        address: '',
-        depositBank: '',
+        uid: "",
+        newUid: "",
+        agentType: "1",
+        flyme: "",
+        name: "",
+        contact: "",
+        phone: "",
+        email: "",
+        address: "",
+        depositBank: "",
         depositCity: [],
-        bankAccount: '',
-        partment: '代理组',
-        accountType: '1'
-      }
+        bankAccount: "",
+        partment: "代理组",
+        accountType: "1",
+      };
     },
     async onSave() {
-      const valid = await this.validate()
+      const valid = await this.validate();
       if (valid) {
-        const data = helper.deepCopy(this.formData)
-        data.depositCity = data.depositCity.join(',')
+        const data = helper.deepCopy(this.formData);
+        data.depositCity = data.depositCity.join(",");
         request({
-          url: `/console/mdsp/admin/agent/${this.actionType === 'add' ? 'add' : 'save'}`,
-          method: 'POST',
-          data
-        }).then(res => {
+          url: `/console/mdsp/admin/agent/${
+            this.actionType === "add" ? "add" : "save"
+          }`,
+          method: "POST",
+          data,
+        }).then((res) => {
           if (res.code == 200) {
             this.$msgbox({
-              type: 'success',
-              message: '保存成功'
-            })
-            this.closeDialog(true)
+              type: "success",
+              message: "保存成功",
+            });
+            this.closeDialog(true);
           } else {
             this.$msgbox({
-              type: 'error',
-              message: res.message || '服务端错误'
-            })
+              type: "error",
+              message: res.message || "服务端错误",
+            });
           }
-        })
+        });
       }
     },
     getCityData() {
       request({
-        url: '/console/mdsp/admin/agent/city',
-        method: 'GET',
-        params: {}
-      }).then(res => {
+        url: "/console/mdsp/admin/agent/city",
+        method: "GET",
+        params: {},
+      }).then((res) => {
         if (res.code == 200) {
-          this.cityData = Object.keys(res.value).map(key => {
+          this.cityData = Object.keys(res.value).map((key) => {
             return {
               value: key,
               label: key,
-              children: res.value[key].map(city => {
+              children: res.value[key].map((city) => {
                 return {
                   value: city.fname,
-                  label: city.fname
-                }
-              })
-            }
-          })
+                  label: city.fname,
+                };
+              }),
+            };
+          });
         }
-      })
+      });
     },
     getAgentOneData() {
       request({
-        url: '/console/mdsp/admin/agent/agentOne',
-        method: 'GET',
-        params: {}
-      }).then(res => {
+        url: "/console/mdsp/admin/agent/agentOne",
+        method: "GET",
+        params: {},
+      }).then((res) => {
         if (res.code == 200) {
-          this.agentOneData = res.value
+          this.agentOneData = res.value;
         }
-      })
+      });
     },
     closeDialog(flushList = false) {
-      let eles = document.querySelectorAll('.el-dialog__headerbtn')
-      eles[0].click()
-      flushList && document.querySelector('.search-buttons').querySelector('.el-button').click()
-    }
-  }
-}
+      let eles = document.querySelectorAll(".el-dialog__headerbtn");
+      eles[0].click();
+      flushList &&
+        document
+          .querySelector(".search-buttons")
+          .querySelector(".el-button")
+          .click();
+    },
+  },
+};
 </script>
 <style lang="stylus" scoped>
 .el-form {
   overflow: hidden;
+
   .form-title {
     margin: 0 0 20px 0;
     line-height: 50px;
     padding-left: 20px;
     border-bottom: 1px solid #ebebeb;
   }
+
   .el-form-item {
     width: 50%;
     height: 40px;
     float: left;
   }
 }
- .btn-wrap
-    margin-bottom: -80px;
-    overflow: hidden;
-    button
-      float: right;
-      margin: 20px 0 0 15px;
+
+.btn-wrap {
+  margin-bottom: -80px;
+  overflow: hidden;
+
+  button {
+    float: right;
+    margin: 20px 0 0 15px;
+  }
+}
 </style>

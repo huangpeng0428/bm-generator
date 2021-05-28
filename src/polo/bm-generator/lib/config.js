@@ -1,4 +1,4 @@
-import expose from './expose'
+import expose from './expose';
 
 export default {
   host: expose.HOST,
@@ -9,22 +9,22 @@ export default {
     accept: {
       image: 'image/png, image/gif, image/jpeg, image/bmp, image/x-icon',
       excel: 'application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      vedio: 'vedio/mp4'
+      vedio: 'vedio/mp4',
     },
     action: '/common/upload',
     getImageSrc(model) {
-      if (!model) return ''
-      let url = model
+      if (!model) return '';
+      let url = model;
       if (url.indexOf('/upload/') === 0) {
-        url = `${expose.HOST}${url}`
+        url = `${expose.HOST}${url}`;
       } else if (url.indexOf('http') !== 0 && url.indexOf('/upload') !== 0) {
-        url = `${expose.HOST}/upload/${url}`
+        url = `${expose.HOST}/upload/${url}`;
       }
 
-      return url
+      return url;
     },
     beforeUpload(file) {
-      return true
+      return true;
     },
     uploadSuccess(res) {
       if (res.code === 200) {
@@ -32,40 +32,39 @@ export default {
           return {
             type: 'success',
             value: res.value,
-            url: ''
-          }
+            url: '',
+          };
         }
-          const url = res.value[0].url
-          const value = url.indexOf('http://') === 0 ? url : `/upload/${url}`
-          return {
-            type: 'success',
-            value,
-            url: url.indexOf('http://') === 0 ? url : `${expose.HOST}/upload/${url}`
-          }
-
+        const url = res.value[0].url;
+        const value = url.indexOf('http://') === 0 ? url : `/upload/${url}`;
+        return {
+          type: 'success',
+          value,
+          url: url.indexOf('http://') === 0 ? url : `${expose.HOST}/upload/${url}`,
+        };
       }
       return {
         type: 'error',
-        message: res.message
-      }
-    }
+        message: res.message,
+      };
+    },
   },
 
   metaTypes: {
-    page: 0
+    page: 0,
   },
 
   dataTypes: {
     string: '文本',
     number: '数字',
     boolean: '布尔值',
-    array: '数组'
+    array: '数组',
   },
 
   dateTypes: {
     date: '日期',
     week: '周数',
-    month: '月份'
+    month: '月份',
   },
 
   daterangeShortcuts: {
@@ -76,7 +75,7 @@ export default {
     week: '最近7天',
     twoWeek: '最近14天',
     month: '最近30天',
-    year: '最近365天'
+    year: '最近365天',
   },
 
   fieldTypes: {
@@ -104,7 +103,7 @@ export default {
     enum: '枚举',
     'text-list': '文本列表',
     'table-column-hidden': '数据列表列隐藏控制',
-    'other-component': '外部组件'
+    'other-component': '外部组件',
   },
 
   buttonTypes: {
@@ -118,24 +117,24 @@ export default {
     confirm: '确认框',
     close: '关闭',
     request: '异步请求',
-    iframe: 'iframe'
+    iframe: 'iframe',
   },
 
   buttonTargetTypes: {
     _self: '本页面打开',
-    _blank: '新页面打开'
+    _blank: '新页面打开',
   },
 
   dialogStatus: {
     add: '新增',
     edit: '编辑',
     view: '查看',
-    disabled: '禁用编辑'
+    disabled: '禁用编辑',
   },
 
   dialogTypes: {
     default: '默认',
-    template: '个性化模板'
+    template: '个性化模板',
   },
 
   paginationLayout: {
@@ -144,7 +143,7 @@ export default {
     prev: '上一页',
     pager: '页码',
     next: '下一页',
-    jumper: '跳转'
+    jumper: '跳转',
   },
 
   columnTypes: {
@@ -159,14 +158,14 @@ export default {
     router: '内部链接',
     inner: '内部操作链接',
     image: '图片',
-    sort: '排序'
+    sort: '排序',
   },
 
   dialogSizeTypes: {
     tiny: '小',
     small: '中',
     large: '大',
-    full: '全屏'
+    full: '全屏',
   },
 
   ruleTypes: {
@@ -174,13 +173,13 @@ export default {
     number: '数字',
     integer: '整数',
     float: '浮点数',
-    date: '日期'
+    date: '日期',
   },
 
   chartCompareDayMap: {
     today: '当日',
     yesterday: '上一天',
-    last_week: '上一周'
+    last_week: '上一周',
   },
 
   colors: [
@@ -192,13 +191,13 @@ export default {
     ['#FF33CC', '#849561', '#393E46'],
     ['#0099FF', '#C46CAA', '#394359'],
     ['#E9007F', '#AD8C45', '#406661'],
-    ['#1FFFFF', '#8E2735', '#61529F']
+    ['#1FFFFF', '#8E2735', '#61529F'],
   ],
 
   fileTypes: {
     image: '图片',
     excel: '表格',
-    vedio: '视频'
+    vedio: '视频',
   },
 
   setup: {
@@ -206,7 +205,7 @@ export default {
       title: '',
       url: '',
       css: '',
-      navs: []
+      navs: [],
     },
 
     searchForm: {
@@ -214,51 +213,45 @@ export default {
       labelWidth: '120px',
       immediate: true,
       urls: {
-        list: {
-        },
-        chart: {
-        },
-        total: {
-        },
-        summary: {
-        }
+        list: {},
+        chart: {},
+        total: {},
+        summary: {},
       },
-      fields: [
-      ],
-      buttons: [
-      ]
+      fields: [],
+      buttons: [],
     },
     chart: {
       yAxisFormatter: '{value}',
       title: '',
       xAxisKey: {
         key: '',
-        options: ''
+        options: '',
       },
       seriesKeys: [],
       resultData: [],
       compare: {
         key: '',
-        day: []
+        day: [],
       },
       options: {
         legend: {
           data: [],
-          selected: {}
+          selected: {},
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
         },
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: []
+          data: [],
         },
         yAxis: {
-          type: 'value'
+          type: 'value',
         },
-        series: []
-      }
+        series: [],
+      },
     },
     dataTable: {
       title: '数据列表',
@@ -269,31 +262,30 @@ export default {
       supportSort: false,
       defaultSort: {
         prop: '',
-        order: 'ascending'
+        order: 'ascending',
       },
       useLocalSort: false,
       useLocalPagination: false,
       summaryPosition: 'last',
-      columns: [
-      ],
+      columns: [],
       columnsFilter: '',
       operations: {
         show: false,
         title: '操作',
         width: '',
         align: 'center',
-        buttons: []
+        buttons: [],
       },
       batch: {
         show: false,
         params: '',
         selectable: '',
-        buttons: []
+        buttons: [],
       },
       sortUrls: {
         up: {},
         down: {},
-        jump: {}
+        jump: {},
       },
       pagination: {
         show: true,
@@ -305,18 +297,17 @@ export default {
           page: {
             type: 'map',
             key: 'start',
-            filter: 'return (page.curr - 1) * page.size;'
+            filter: 'return (page.curr - 1) * page.size;',
           },
           size: {
             type: 'map',
             key: 'max',
-            filter: ''
-          }
-        }
-      }
+            filter: '',
+          },
+        },
+      },
     },
 
-    dialogs: {
-    }
-  }
-}
+    dialogs: {},
+  },
+};

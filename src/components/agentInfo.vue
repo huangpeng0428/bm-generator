@@ -58,27 +58,27 @@
 </template>
 
 <script>
-import request from '../polo/bm-generator/lib/request'
-import DetailTable from './common/detailTable'
+import request from "../polo/bm-generator/lib/request";
+import DetailTable from "./common/detailTable";
 
-export default{
-  name: 'AgentInfo',
+export default {
+  name: "AgentInfo",
 
   components: {
-    DetailTable: DetailTable
+    DetailTable: DetailTable,
   },
 
   props: {
     // eslint-disable-next-line vue/require-prop-types
     value: {
-      default: 0
+      default: 0,
     },
     field: {
       type: Object,
       default() {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
 
   data() {
@@ -87,64 +87,69 @@ export default{
       agentType: [
         {
           val: 0,
-          key: '广告主'
+          key: "广告主",
         },
         {
           val: 1,
-          key: '一级代理'
+          key: "一级代理",
         },
         {
           val: 2,
-          key: '二级代理'
-        }
+          key: "二级代理",
+        },
       ],
       clientTypeMapp: [
         {
           value: 3,
-          text: '一级代理下的二级代理'
+          text: "一级代理下的二级代理",
         },
         {
           value: 4,
-          text: '一级代理下广告主'
+          text: "一级代理下广告主",
         },
         {
           value: 5,
-          text: '二级代理下的广告主'
-        }
+          text: "二级代理下的广告主",
+        },
       ],
-      gridData: []
-    }
+      gridData: [],
+    };
   },
 
   computed: {
     detail() {
-      return [{
-        title: '代理基本信息',
-        rows: [
-          [
-            { label: '代理用户ID：', value: this.info.uid },
-            { label: '活动名称：', value: this.info.name }
-          ], [
-            { label: '代理类型 ', value: this.getAgentType(this.info.agentType) },
-            { label: '操作者: ', value: this.info.operator }
-          ], [
-            { label: 'Flyme帐号：', value: this.info.flyme }
-          ], [
-            { label: '备注：', value: this.info.remark }
-          ], [
-            { label: '创建时间：', value: this.info.createTime },
-            { label: '最后修改时间：', value: this.info.updateTime }
-          ]
-        ]
-      }]
-    }
+      return [
+        {
+          title: "代理基本信息",
+          rows: [
+            [
+              { label: "代理用户ID：", value: this.info.uid },
+              { label: "活动名称：", value: this.info.name },
+            ],
+            [
+              {
+                label: "代理类型 ",
+                value: this.getAgentType(this.info.agentType),
+              },
+              { label: "操作者: ", value: this.info.operator },
+            ],
+            [{ label: "Flyme帐号：", value: this.info.flyme }],
+            [{ label: "备注：", value: this.info.remark }],
+            [
+              { label: "创建时间：", value: this.info.createTime },
+              { label: "最后修改时间：", value: this.info.updateTime },
+            ],
+          ],
+        },
+      ];
+    },
   },
 
   watch: {
     value(val) {
       if (!val) return;
       this.getDetail();
-    }
+    },
   },
 
   mounted() {},
@@ -152,18 +157,18 @@ export default{
   methods: {
     getDetail() {
       request({
-        url: '/console/mdsp/admin/agent/info',
-        method: 'GET',
+        url: "/console/mdsp/admin/agent/info",
+        method: "GET",
         params: {
-          id: this.value.uid
-        }
+          id: this.value.uid,
+        },
       }).then((res) => {
         if (res.code == 200) {
-          this.info = res.value
+          this.info = res.value;
         } else {
-          this.$msgbox({type: 'error', message: res.message})
+          this.$msgbox({ type: "error", message: res.message });
         }
-      })
+      });
     },
     getAgentType(type) {
       for (let i = 0; i < this.agentType.length; i++) {
@@ -181,34 +186,39 @@ export default{
     },
     getAppList(uid) {
       request({
-        url: '/console/mdsp/admin/agent/app/list',
-        method: 'GET',
+        url: "/console/mdsp/admin/agent/app/list",
+        method: "GET",
         params: {
-          sponsorId: uid
-        }
+          sponsorId: uid,
+        },
       }).then((res) => {
         if (res.code == 200) {
-          this.gridData = res.value
+          this.gridData = res.value;
         } else {
-          this.$msgbox({type: 'error', message: res.message})
+          this.$msgbox({ type: "error", message: res.message });
         }
-      })
-    }
-  }
-}
+      });
+    },
+  },
+};
 </script>
 
 <style lang="stylus">
-.el-popover
-  .el-table__body-wrapper
+.el-popover {
+  .el-table__body-wrapper {
     max-height: 600px;
     overflow: auto;
-.agent-info
-  .table-title
-    font-size 15px
-    font-weight bold
-    text-align center
-    border-bottom 1px solid #eee
-    line-height 36px
-    background #dedede
+  }
+}
+
+.agent-info {
+  .table-title {
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+    line-height: 36px;
+    background: #dedede;
+  }
+}
 </style>

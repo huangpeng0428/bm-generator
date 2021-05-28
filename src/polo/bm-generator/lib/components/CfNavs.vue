@@ -1,12 +1,21 @@
 <template>
-  <div class="navs-wrapper" v-if="navs.length > 0">
+  <div
+    v-if="navs.length > 0"
+    class="navs-wrapper">
     <ul class="clearfix">
-      <li v-for="nav in navs" :key="nav.path">
-        <a href="javascript:;" v-if="nav.active" class="active">
-          {{nav.text}}
+      <li
+        v-for="nav in navs"
+        :key="nav.path">
+        <a
+          v-if="nav.active"
+          href="javascript:;"
+          class="active">
+          {{ nav.text }}
         </a>
-        <router-link v-else :to="{ path: nav.path }">
-          {{nav.text}}
+        <router-link
+          v-else
+          :to="{ path: nav.path }">
+          {{ nav.text }}
         </router-link>
       </li>
     </ul>
@@ -15,21 +24,19 @@
 
 <script>
 export default {
-  name: 'CfNavs',
+  name: "CfNavs",
 
   props: {
     navs: {
       type: Array,
       default() {
-        return []
+        return [];
       },
     },
   },
 
   data() {
-    return {
-
-    }
+    return {};
   },
-}
+};
 </script>

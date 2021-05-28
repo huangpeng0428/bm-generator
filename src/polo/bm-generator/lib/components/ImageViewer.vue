@@ -1,52 +1,57 @@
 <template>
-  <img class="image-viewer" :src="this.thumbnail || this.src" @click="handleClick" />
+  <img
+    :src="thumbnail || src"
+    class="image-viewer"
+    @click="handleClick" >
 </template>
 
 <script>
-import Vue from 'vue'
-import ImageViewerBox from './ImageViewerBox'
+import Vue from "vue";
+import ImageViewerBox from "./ImageViewerBox";
 
-const BoxConstructor = Vue.extend(ImageViewerBox)
+const BoxConstructor = Vue.extend(ImageViewerBox);
 
 export default {
-  name: 'ImageViewer',
+  name: "ImageViewer",
 
   props: {
     src: {
       type: String,
       required: true,
-      default: '',
+      default: "",
     },
 
     thumbnail: {
       type: String,
+      default() {
+        return "";
+      },
     },
   },
 
   data() {
-    return {
-    }
+    return {};
   },
 
   methods: {
     handleClick() {
       const instance = new BoxConstructor({
-        el: document.createElement('div'),
+        el: document.createElement("div"),
         propsData: {
           src: this.src,
         },
-      })
-      instance.$on('close', () => {
-        instance.$destroy()
-        document.querySelector('body').removeChild(instance.$el)
-      })
-      document.querySelector('body').appendChild(instance.$el)
+      });
+      instance.$on("close", () => {
+        instance.$destroy();
+        document.querySelector("body").removeChild(instance.$el);
+      });
+      document.querySelector("body").appendChild(instance.$el);
     },
   },
-}
+};
 </script>
 <style scoped>
-  img {
-    width: 100%;
-  }
+img {
+  width: 100%;
+}
 </style>

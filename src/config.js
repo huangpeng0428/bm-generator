@@ -10,15 +10,13 @@ import store from './store';
 
 export default {
   init() {
-
     // expose.HOST = 'https://api-dashboard.flyme.cn'
     // expose.HOST = 'http://admin-mdsp.flyme.cn'
     // Expose.HOST = process.env.NODE_ENV != 'production' ? '' : 'http://admanage.meizu.com'
     Expose.HOST = 'http://admanage.meizu.com';
     request.interceptors.response.use(
-      res => {
+      (res) => {
         if (res.data.code === 198001) {
-
           // 需要登录
           // location.href = `https://login.flyme.cn/login/login.html?useruri=${encodeURIComponent(location.href)}`
           location.href = 'http://admanage.meizu.com/uc/login';
@@ -32,48 +30,43 @@ export default {
             code: 200,
             value: {
               data: [],
-              total: 0
-            }
+              total: 0,
+            },
           };
         }
 
-        if (
-          res.status === 200 &&
-          typeof res.data === 'string' &&
-          res.data.indexOf('权限') !== -1
-        ) {
+        if (res.status === 200 && typeof res.data === 'string' && res.data.indexOf('权限') !== -1) {
           store.commit('pushError', {
             type: 'auth',
-            res
+            res,
           });
         }
         return res.data;
       },
-      res => {
+      (res) => {
         if (!res.url) {
           console.log('Request canceled', res.message);
         } else {
-
           // handle error
           store.commit('pushError', {
             type: 'response',
-            res
+            res,
           });
         }
-      }
+      },
     );
     this.installComponents();
   },
   installComponents() {
     const requireComponent = require.context('./components', false, /\.vue$/);
-    requireComponent.keys().forEach(fileName => {
+    requireComponent.keys().forEach((fileName) => {
       const componentConfig = requireComponent(fileName);
       const componentName = fileName.match(/([^/]+)\.vue$/)[1];
 
       Vue.component(
-        componentName.replace(/^./, word => word.toUpperCase()),
-        componentConfig.default || componentConfig
+        componentName.replace(/^./, (word) => word.toUpperCase()),
+        componentConfig.default || componentConfig,
       );
     });
-  }
+  },
 };

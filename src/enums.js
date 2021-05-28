@@ -69,7 +69,7 @@ export default {
     '/agent_manage': '/generator/agent_manage',
     '/sponsor_manage': '/generator/sponsor_manage',
     '/long_tail': '/generator/long_tail',
-    '/opin_ion': '/generator/opin_ion'
+    '/opin_ion': '/generator/opin_ion',
   },
 
   // permissionTree: {
@@ -150,6 +150,6 @@ export default {
     '/export_page/module_special_app': '/generator/module_special',
     '/export_page/module_ranks_pos': '/generator/module_ranks',
     '/export_page/module_ranks_app': '/generator/module_ranks',
-    '/export_page/module_category_pos': '/generator/module_category'
-  }
-}
+    '/export_page/module_category_pos': '/generator/module_category',
+  },
+};

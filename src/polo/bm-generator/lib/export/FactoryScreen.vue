@@ -2359,70 +2359,107 @@
 </template>
 
 <script>
-  import factoryScreen from './js/factoryScreen'
+import factoryScreen from "./js/factoryScreen";
 
-  export default factoryScreen
+export default factoryScreen;
 </script>
 
 <style lang="stylus">
-  .factory-wrapper
-    width 100%
-    padding-bottom 60px
-    .top-generator-page
-      margin-bottom 15px
-    .factory-footer
-      margin-top 22px
-      text-align right
-      position fixed
-      bottom 0
-      left 0
-      right 0
-      background-color #fff
-      padding 10px 20px
-      z-index 90
-    .el-card
-      width 100%
-    hr
-      margin-top 22px
-      border-color rgba(170, 170, 170, 0.36)
-    .dialog-url, .dialog-field, .dialog-button
-      .el-row
-        margin-bottom 20px
-        &:last-child
-          margin-bottom: 0;
-      .form-label
-        text-align right
-        padding-right 12px
-    .table-field-async-config, .table-button-async-config
-      margin-top 12px
-    .el-form-item__content
-      p:first-child
-        margin-top 0
-    .el-icon-arrow-up, .el-icon-arrow-down
-      color #20a0ff
-      cursor pointer
-      margin-right 10px
-      &.disabled
-        color #ccc
-        cursor not-allowed
-    .prop-desc-list
-      margin-top 12px
-      dl
-        border 1px solid #ccc
-        border-bottom none
-        margin 0
-        overflow hidden
-        &:first-of-type
-          border-radius 5px 5px 0 0
-        &:last-of-type
-          border-bottom 1px solid #ccc
-          border-radius 0 0 5px 5px
-      dt
-        float left
-        width 130px
-        padding-left 12px
-        background #f3f3f3
-      dd
-        margin-left 130px
-        padding-left 12px
+.factory-wrapper {
+  width: 100%;
+  padding-bottom: 60px;
+
+  .top-generator-page {
+    margin-bottom: 15px;
+  }
+
+  .factory-footer {
+    margin-top: 22px;
+    text-align: right;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    padding: 10px 20px;
+    z-index: 90;
+  }
+
+  .el-card {
+    width: 100%;
+  }
+
+  hr {
+    margin-top: 22px;
+    border-color: rgba(170, 170, 170, 0.36);
+  }
+
+  .dialog-url, .dialog-field, .dialog-button {
+    .el-row {
+      margin-bottom: 20px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    .form-label {
+      text-align: right;
+      padding-right: 12px;
+    }
+  }
+
+  .table-field-async-config, .table-button-async-config {
+    margin-top: 12px;
+  }
+
+  .el-form-item__content {
+    p:first-child {
+      margin-top: 0;
+    }
+  }
+
+  .el-icon-arrow-up, .el-icon-arrow-down {
+    color: #20a0ff;
+    cursor: pointer;
+    margin-right: 10px;
+
+    &.disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .prop-desc-list {
+    margin-top: 12px;
+
+    dl {
+      border: 1px solid #ccc;
+      border-bottom: none;
+      margin: 0;
+      overflow: hidden;
+
+      &:first-of-type {
+        border-radius: 5px 5px 0 0;
+      }
+
+      &:last-of-type {
+        border-bottom: 1px solid #ccc;
+        border-radius: 0 0 5px 5px;
+      }
+    }
+
+    dt {
+      float: left;
+      width: 130px;
+      padding-left: 12px;
+      background: #f3f3f3;
+    }
+
+    dd {
+      margin-left: 130px;
+      padding-left: 12px;
+    }
+  }
+}
 </style>

@@ -4,11 +4,7 @@ const quicksort = function(array, compare) {
     return array;
   }
   let pivot = Math.ceil(len / 2);
-  return merge(
-    quicksort(array.slice(0, pivot), compare),
-    quicksort(array.slice(pivot), compare),
-    compare
-  );
+  return merge(quicksort(array.slice(0, pivot), compare), quicksort(array.slice(pivot), compare), compare);
 };
 
 const merge = function(left, right, compare) {

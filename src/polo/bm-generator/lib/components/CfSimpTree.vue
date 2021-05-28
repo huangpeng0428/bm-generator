@@ -3,16 +3,15 @@
     <cf-simp-tree-node
       v-for="item in data"
       :key="item.value"
-      :node="item">
-    </cf-simp-tree-node>
+      :node="item"/>
   </div>
 </template>
 
 <script>
-import CfSimpTreeNode from './CfSimpTreeNode'
+import CfSimpTreeNode from "./CfSimpTreeNode";
 
 export default {
-  name: 'CfSimpTree',
+  name: "CfSimpTree",
 
   components: {
     CfSimpTreeNode,
@@ -22,66 +21,72 @@ export default {
     data: {
       required: true,
       type: Array,
-      default: [],
+      default() {
+        return [];
+      },
     },
     value: {
       type: Array,
       default() {
-        return []
+        return [];
       },
     },
   },
 
   data() {
-    return {
-    }
+    return {};
   },
 
   watch: {
     data: {
       handler(node) {
-        this.getModelValue(node)
+        this.getModelValue(node);
       },
       deep: true,
     },
   },
 
+  mounted() {
+    this.getModelValue(this.data);
+  },
+
   methods: {
     getModelValue(node) {
-      const value = []
+      const value = [];
 
       const fn = (items) => {
         items.forEach((item) => {
-          if (item.checked && typeof item.value !== 'undefined') {
-            value.push(item.value)
+          if (item.checked && typeof item.value !== "undefined") {
+            value.push(item.value);
           }
 
           if (item.children) {
-            fn(item.children)
+            fn(item.children);
           }
-        })
-      }
+        });
+      };
 
-      fn(node)
+      fn(node);
 
-      this.$emit('input', value)
+      this.$emit("input", value);
     },
   },
-
-  mounted() {
-    this.getModelValue(this.data)
-  },
-}
+};
 </script>
 
 <style lang="stylus">
-  .tree-node
-    > .content
-      .expand
-        width 12px
-        display inline-block
-      i
-        color #656565
-        font-size 10px
-        cursor pointer
+.tree-node {
+  > .content {
+    .expand {
+      width: 12px;
+      display: inline-block;
+    }
+
+    i {
+      color: #656565;
+      font-size: 10px;
+      cursor: pointer;
+    }
+  }
+}
 </style>

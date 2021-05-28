@@ -449,105 +449,167 @@
 </template>
 
 <script>
-  import generatorScreen from './js/generatorScreen'
+import generatorScreen from "./js/generatorScreen";
 
-  export default generatorScreen
+export default generatorScreen;
 </script>
 
 <style lang="stylus" scoped>
-  .generator-wrapper
-    width 100%
-  .breadcrumb-wrap
-    margin-bottom 2rem
-  .page-title
-    margin 0 0 2rem
-  .box-card
-    margin-bottom 2rem
-  .search-form
-    width 100%
-    .el-date-editor
-      width 100%
-      min-width 245px
-  .search-buttons
-    text-align right
-  .data-table
-    width 100%
-    img.cell-content-img
-      max-height 100px
-    .cell-content-color
-      span
-        width 80px
-        height 20px
-        display block
-        margin 0 auto
-      i
-        font-style normal
-    .datatable-column-sort
-      .el-icon-arrow-up, .el-icon-arrow-down, .el-icon-sort
-        color #20a0ff
-        cursor pointer
-        margin 0 10px
-        &.disable
-          color #eee
-  .export-wrapper
-    position absolute
-    right 20px
-    bottom 20px
-    width 200px
-    background #fff
-    padding 8px 12px
-    z-index 20
-    border-radius 5px
-    box-shadow 0 0 5px #9a9a9a
-    .export-title
-      text-align center
-      margin-bottom 4px
-    .export-close
-      position absolute
-      right 9px
-      top 7px
-      font-size 8px
-      cursor pointer
-  .text-list
-    margin 0
-    list-type none
-  .iframe-dialog
-    .el-dialog__body
-      padding 8px
-    iframe
-      width 100%
-      height 60vh
-  .chart-wrap
-    margin 0
-    .echarts
-      width 100%
-  .chart-toggle-title
-    display inline-block
-    margin-left 30px
-  .img-item
-    width 200px
-  .popper-column-sort
-    .el-input
-      margin-bottom 5px
-    .action
-      text-align right
-  .search-buttons{
-    margin-right: 200px;
+.generator-wrapper {
+  width: 100%;
+}
+
+.breadcrumb-wrap {
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  margin: 0 0 2rem;
+}
+
+.box-card {
+  margin-bottom: 2rem;
+}
+
+.search-form {
+  width: 100%;
+
+  .el-date-editor {
+    width: 100%;
+    min-width: 245px;
   }
-  .batch-action-wrap button{
-      color: #fff;
-      background-color: #409EFF;
-      border-color: #409EFF;
+}
+
+.search-buttons {
+  text-align: right;
+}
+
+.data-table {
+  width: 100%;
+
+  img.cell-content-img {
+    max-height: 100px;
   }
+
+  .cell-content-color {
+    span {
+      width: 80px;
+      height: 20px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    i {
+      font-style: normal;
+    }
+  }
+
+  .datatable-column-sort {
+    .el-icon-arrow-up, .el-icon-arrow-down, .el-icon-sort {
+      color: #20a0ff;
+      cursor: pointer;
+      margin: 0 10px;
+
+      &.disable {
+        color: #eee;
+      }
+    }
+  }
+}
+
+.export-wrapper {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 200px;
+  background: #fff;
+  padding: 8px 12px;
+  z-index: 20;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #9a9a9a;
+
+  .export-title {
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .export-close {
+    position: absolute;
+    right: 9px;
+    top: 7px;
+    font-size: 8px;
+    cursor: pointer;
+  }
+}
+
+.text-list {
+  margin: 0;
+  list-type: none;
+}
+
+.iframe-dialog {
+  .el-dialog__body {
+    padding: 8px;
+  }
+
+  iframe {
+    width: 100%;
+    height: 60vh;
+  }
+}
+
+.chart-wrap {
+  margin: 0;
+
+  .echarts {
+    width: 100%;
+  }
+}
+
+.chart-toggle-title {
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.img-item {
+  width: 200px;
+}
+
+.popper-column-sort {
+  .el-input {
+    margin-bottom: 5px;
+  }
+
+  .action {
+    text-align: right;
+  }
+}
+
+.search-buttons {
+  margin-right: 200px;
+}
+
+.batch-action-wrap button {
+  color: #fff;
+  background-color: #409EFF;
+  border-color: #409EFF;
+}
 </style>
 <style lang="stylus">
-  // 隐藏 filter 的标签（sortable的时候不让点击头部可以排序）
-  .data-table
-    .el-table__column-filter-trigger
-      display none
-  .el-date-editor
-    .el-input__icon
-      width 20px
-  .chart-compare-day
-    text-align center
+// 隐藏 filter 的标签（sortable的时候不让点击头部可以排序）
+.data-table {
+  .el-table__column-filter-trigger {
+    display: none;
+  }
+}
+
+.el-date-editor {
+  .el-input__icon {
+    width: 20px;
+  }
+}
+
+.chart-compare-day {
+  text-align: center;
+}
 </style>

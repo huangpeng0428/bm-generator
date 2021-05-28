@@ -1,34 +1,39 @@
 <script>
-import Vue from 'vue'
+import Vue from "vue";
 
 export default {
-  name: 'TmplComponent',
+  name: "TmplComponent",
 
   props: {
     value: {
       type: Object,
+      default() {
+        return {};
+      },
     },
 
     template: {
       type: String,
-      default: '<div></div>',
+      default: "<div></div>",
     },
 
     data: {
       type: Object,
       default() {
-        return {}
+        return {};
       },
     },
 
     props: {
       type: Array,
-      default: [],
+      default() {
+        return [];
+      },
     },
 
     css: {
       type: String,
-      default: '',
+      default: "",
     },
   },
 
@@ -36,55 +41,55 @@ export default {
     return {
       dynamic: {},
       styleTag: null,
-    }
+    };
   },
 
   watch: {
     props(props, oldProps) {
       oldProps.forEach((prop) => {
-        this.$delete(this.dynamic, prop.name)
-      })
+        this.$delete(this.dynamic, prop.name);
+      });
       props.forEach((prop) => {
-        this.$set(this.dynamic, prop.name, prop.value)
-      })
+        this.$set(this.dynamic, prop.name, prop.value);
+      });
     },
 
     css(val) {
-      this.setCss(val)
+      this.setCss(val);
     },
+  },
+
+  mounted() {
+    this.props.forEach((prop) => {
+      this.$set(this.dynamic, prop.name, prop.value);
+    });
+
+    this.styleTag = document.createElement("style");
+    this.styleTag.type = "text/css";
+    this.setCss(this.css);
+    document.querySelector("head").appendChild(this.styleTag);
+  },
+
+  beforeDestroy() {
+    document.querySelector("head").removeChild(this.styleTag);
   },
 
   methods: {
     setCss(val) {
       if (this.styleTag.styleSheet) {
-        this.styleTag.styleSheet.cssText = val
+        this.styleTag.styleSheet.cssText = val;
       } else {
-        this.styleTag.appendChild(document.createTextNode(val))
+        this.styleTag.appendChild(document.createTextNode(val));
       }
     },
 
     getDynamicValue() {
-      return Object.assign({}, this.dynamic)
+      return Object.assign({}, this.dynamic);
     },
   },
 
   render(h) {
-    return Vue.compile(this.template).render.call(this, h)
+    return Vue.compile(this.template).render.call(this, h);
   },
-
-  mounted() {
-    this.props.forEach((prop) => {
-      this.$set(this.dynamic, prop.name, prop.value)
-    })
-
-    this.styleTag = document.createElement('style')
-    this.styleTag.type = 'text/css'
-    this.setCss(this.css)
-    document.querySelector('head').appendChild(this.styleTag)
-  },
-
-  beforeDestroy() {
-    document.querySelector('head').removeChild(this.styleTag)
-  },
-}
+};
 </script>

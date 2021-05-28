@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import Helper from '../../helper'
+import Helper from "../../helper";
 
 export default {
   props: {
@@ -64,116 +64,116 @@ export default {
       type: Object,
       default: () => {
         return {
-          left: '备选位置',
-          right: '已选位置'
-        }
-      }
-    }
+          left: "备选位置",
+          right: "已选位置",
+        };
+      },
+    },
   },
 
   data() {
-    let dataChecked = this.getDataChecked(this.defaultDataCheckedId, true)
-    let dataCheckedId = Helper.deepCopy(this.defaultDataCheckedId, [])
+    let dataChecked = this.getDataChecked(this.defaultDataCheckedId, true);
+    let dataCheckedId = Helper.deepCopy(this.defaultDataCheckedId, []);
     return {
       defaultProps: {
-        children: 'slot',
-        label: 'name'
+        children: "slot",
+        label: "name",
       },
       dataCheckedId: dataCheckedId,
-      dataChecked: dataChecked
-    }
+      dataChecked: dataChecked,
+    };
   },
 
   computed: {},
 
   watch: {
-    dataCheckedId: {      // 选中的id
+    dataCheckedId: {
+      // 选中的id
       handler(val) {
-        this.$emit('checkDataChang', val)
+        this.$emit("checkDataChang", val);
       },
-      deep: true
+      deep: true,
     },
-    defaultDataCheckedId: {   // 传入时选中
-      handler(val) {
-      }
+    defaultDataCheckedId: {
+      // 传入时选中
+      handler(val) {},
     },
-    dataChecked: {        // 右边tree
-      handler(val) {
-      }
-    }
+    dataChecked: {
+      // 右边tree
+      handler(val) {},
+    },
   },
 
   mounted() {
-    this.debounceFn = this.debounce(this.getDataChecked, 200)
+    this.debounceFn = this.debounce(this.getDataChecked, 200);
   },
 
   methods: {
     handleRemove(node, data) {
-      if (!data.hasOwnProperty('slot') && node.parent.childNodes.length === 1) {
-        return this.handleRemove(node.parent, node.parent.data)
+      if (!data.hasOwnProperty("slot") && node.parent.childNodes.length === 1) {
+        return this.handleRemove(node.parent, node.parent.data);
       }
-      const parent = node.parent
-      const children = parent.data.slot || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
-      this.dataCheckedId = this.getChckedIds()
-      this.$refs.treeLeft.setCheckedKeys(this.dataCheckedId)
+      const parent = node.parent;
+      const children = parent.data.slot || parent.data;
+      const index = children.findIndex((d) => d.id === data.id);
+      children.splice(index, 1);
+      this.dataCheckedId = this.getChckedIds();
+      this.$refs.treeLeft.setCheckedKeys(this.dataCheckedId);
     },
     handleCheckChange(data, checked, indeterminate) {
-      if (data.hasOwnProperty('slot')) return
+      if (data.hasOwnProperty("slot")) return;
       if (checked) {
-
         // console.log(data.id)
-        this.dataCheckedId.push(data.id)
+        this.dataCheckedId.push(data.id);
       } else {
-        let idx = this.dataCheckedId.indexOf(data.id)
+        let idx = this.dataCheckedId.indexOf(data.id);
 
         // console.log(idx)
         if (idx > -1) {
-          this.dataCheckedId.splice(idx, 1)
+          this.dataCheckedId.splice(idx, 1);
         }
 
         // console.log(data.id)
       }
-      this.debounceFn()
+      this.debounceFn();
     },
     getDataChecked(checkedId, isReturn = false) {
-      let dataCheckedId = checkedId || this.dataCheckedId
-      let dataChecked = []
-      this.dataDefault.forEach(item => {
-        let slotArr = []
-        item.slot.forEach(slot => {
+      let dataCheckedId = checkedId || this.dataCheckedId;
+      let dataChecked = [];
+      this.dataDefault.forEach((item) => {
+        let slotArr = [];
+        item.slot.forEach((slot) => {
           if (~dataCheckedId.indexOf(slot.id)) {
-            slotArr.push(Helper.deepCopy(slot, {}))
+            slotArr.push(Helper.deepCopy(slot, {}));
           }
-        })
+        });
         if (slotArr.length) {
-          let dataCheckedItem = Helper.deepCopy(item, {})
-          dataCheckedItem.slot = slotArr
-          dataChecked.push(dataCheckedItem)
+          let dataCheckedItem = Helper.deepCopy(item, {});
+          dataCheckedItem.slot = slotArr;
+          dataChecked.push(dataCheckedItem);
         }
-      })
+      });
       if (!isReturn) {
-        this.dataChecked = dataChecked
+        this.dataChecked = dataChecked;
       } else {
-        return dataChecked
+        return dataChecked;
       }
     },
     getChckedIds() {
-      let ids = []
-      this.dataChecked.forEach(item => {
+      let ids = [];
+      this.dataChecked.forEach((item) => {
         if (item && item.slot) {
-          item.slot.forEach(slot => {
-            ids.push(slot.id)
-          })
+          item.slot.forEach((slot) => {
+            ids.push(slot.id);
+          });
         }
-      })
-      return ids
+      });
+      return ids;
     },
     debounce(func, wait, immediate) {
       let timeout, args, context, timestamp, result;
 
-      const later = function() {
+      const later = () => {
         let last = new Date().getTime() - timestamp;
 
         if (last < wait && last >= 0) {
@@ -185,8 +185,8 @@ export default {
             if (!timeout) context = args = null;
           }
         }
-      }
-      return function() {
+      };
+      return () => {
         context = this;
         args = arguments;
         timestamp = new Date().getTime();
@@ -200,9 +200,9 @@ export default {
         return result;
       };
     },
-    debounceFn() {}
-  }
-}
+    debounceFn() {},
+  },
+};
 </script>
 
 <style lang="stylus">
@@ -211,6 +211,7 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -219,9 +220,11 @@ export default {
     font-size: 14px;
     padding-right: 8px;
   }
+
   .tree-left {
     width: 60%;
   }
+
   .tree-right {
     width: 40%;
   }
